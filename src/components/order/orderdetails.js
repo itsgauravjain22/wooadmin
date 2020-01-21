@@ -33,13 +33,8 @@ export default class OrderDetails extends Component {
         let productDataJson;
         this.setState({ loading: true });
 
-        productDataJson = fetch(`${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Basic ' + Base64.btoa('ck_20d0fd1bf4b32534250b69076ca57ac75cf51662:cs_76e01499543ded3f5ecd82d9e762d4fa1680c862'),
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        }).then((response) => response.json())
+        productDataJson = fetch(`${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`)
+        .then((response) => response.json())
             .then((responseJson) => {
                 this.setState({
                     loading: false,
