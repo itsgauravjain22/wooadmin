@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import Moment from 'moment';
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
-import Base64 from '../utility/base64';
-import currencySymbols from '../utility/currencysymbol';
-import SingleOrder from './singleorder';
+import * as SecureStore from 'expo-secure-store';
+import Base64 from '../../utility/base64';
+import currencySymbols from '../../utility/currencysymbol';
 
-export class OrdersList extends Component {
+export default class OrdersList extends Component {
 
     static navigationOptions = {
         headerTitle: 'Orders',
@@ -28,26 +26,34 @@ export class OrdersList extends Component {
             page: 1,
             seed: 1,
             error: null,
-            refreshing: false
+            refreshing: false,
+            base_url: null,
+            c_key: null,
+            c_secret: null,
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        await this.getCredentials();
         this.fetchOrderList();
     }
 
+    getCredentials = async() => {
+        const credentials = await SecureStore.getItemAsync('credentials');
+        const credentialsJson = JSON.parse(credentials)
+        this.setState({
+            base_url: credentialsJson.base_url,
+            c_key: credentialsJson.c_key,
+            c_secret: credentialsJson.c_secret,
+        })
+    }
+
     fetchOrderList = () => {
-        const { page } = this.state;
-        const url = `https://www.kalashcards.com//wp-json/wc/v3/orders?per_page=20&page=${page}`;
+        const { base_url, c_key, c_secret, page } = this.state;
+        const url = `${base_url}/wp-json/wc/v3/orders?per_page=20&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`
         this.setState({ loading: true });
         setTimeout(() => {
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Basic ' + Base64.btoa('ck_20d0fd1bf4b32534250b69076ca57ac75cf51662:cs_76e01499543ded3f5ecd82d9e762d4fa1680c862'),
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }).then((response) => response.json())
+            fetch(url).then((response) => response.json())
                 .then((responseJson) => {
                     this.setState({
                         data: [...this.state.data, ...responseJson],
@@ -115,7 +121,7 @@ export class OrdersList extends Component {
         return (
             <FlatList
                 data={this.state.data}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.id.toString()}
                 refreshing={this.state.refreshing}
                 onRefresh={this.handleRefresh}
                 onEndReached={this.handleLoadMore}
@@ -157,13 +163,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     }
 });
-
-const AppNavigator = createStackNavigator({
-    Orders: OrdersList,
-    SingleOrder: SingleOrder
-},{
-    initialRouteName: 'Orders',
-}
-);
-
-export default createAppContainer(AppNavigator);

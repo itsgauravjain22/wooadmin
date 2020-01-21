@@ -8,9 +8,11 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^10.0.6",
+    "@react-native-community/datetimepicker": "^2.1.0",
     "@react-native-community/masked-view": "^0.1.6",
     "expo": "~36.0.0",
     "expo-font": "^8.0.0",
+    "expo-secure-store": "^8.0.0",
     "moment": "^2.24.0",
     "native-base": "^2.13.8",
     "react": "^16.12.0",

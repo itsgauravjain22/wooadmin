@@ -1,7 +1,7 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View, FlatList, Image, ScrollView, ActivityIndicator } from 'react-native';
 import Moment from 'moment';
-import Base64 from '../utility/base64';
+import Base64 from '../../utility/base64';
 
 export default class SingleOrder extends Component {
     constructor(props) {
@@ -48,10 +48,9 @@ export default class SingleOrder extends Component {
                     loading: false,
                 })
             });
-        console.log(productDataJson);
         return (Array.isArray(productDataJson.images) && productDataJson.images.length) ?
             productDataJson.images[0].src :
-            '../../assets/images/blank_product.png';
+            '../../../assets/images/blank_product.png';
     }
 
     getProductTotal = () => {
@@ -73,12 +72,13 @@ export default class SingleOrder extends Component {
         meta_dataArray.forEach(item => {
             if (item && (item.key === '_tmcartepo_data')) {
                 item.value.forEach(tmObject => {
-                    tmProductOptionsMap.set(tmObject.name, tmObject.value);
+                    let value = `${tmObject.name}_${tmObject.value}_${item.id}`;
+                    tmProductOptionsMap.set(tmObject.name, value);
                 })
             }
         });
         tmProductOptionsMap.forEach((value, key) => {
-            tmProductOptions.push(<Text>{key}: {value}</Text>)
+            tmProductOptions.push(<Text key={value}>{key}: {(value)?value.toString().split('_')[1]:null}</Text>)
         });
         return tmProductOptions;
     }
@@ -109,7 +109,7 @@ export default class SingleOrder extends Component {
                             <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white' }}>
                                 <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>
                                     <Image source={null}
-                                        onError={(e) => { this.props.source = require('../../assets/images/blank_product.png') }}
+                                        onError={(e) => { this.props.source = require('../../../assets/images/blank_product.png') }}
                                         style={{ height: 115, width: 115 }} resizeMode='contain' />
                                 </View>
                                 <View style={{ flex: 2, marginTop: 10, marginBottom: 10, justifyContent: "center" }}>
