@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import Moment from 'moment';
 import * as SecureStore from 'expo-secure-store';
-import Base64 from '../../utility/base64';
 import currencySymbols from '../../utility/currencysymbol';
 
 export default class OrdersList extends Component {
@@ -130,9 +129,12 @@ export default class OrdersList extends Component {
                 ListFooterComponent={this.renderListFooter}
                 renderItem={({ item }) =>
                     <TouchableOpacity onPress={() => {
-                        this.props.navigation.navigate('SingleOrder', {
+                        this.props.navigation.navigate('OrderDetails', {
                             orderId: item.id,
-                            orderData: item
+                            orderData: item,
+                            base_url: this.state.base_url,
+                            c_key: this.state.c_key,
+                            c_secret: this.state.c_secret
                         });
                     }}>
                         <View

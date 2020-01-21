@@ -49,7 +49,6 @@ export default class ProductsList extends Component {
         const { base_url, c_key, c_secret, page } = this.state;
         const url = `${base_url}/wp-json/wc/v3/products?per_page=20&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`;
         this.setState({ loading: true });
-        console.log(url);
         setTimeout(() => {
             fetch(url).then((response) => response.json())
                 .then((responseJson) => {
@@ -59,8 +58,7 @@ export default class ProductsList extends Component {
                         loading: false,
                         refreshing: false
                     });
-                    this.state.data.forEach(item => console.log(`${item.sku}: ${item.stock_quantity}`))
-                    console.log('end')
+                    // this.state.data.forEach(item => console.log(`${item.sku}: ${item.stock_quantity}`))
                 }).catch((error) => {
                     this.setState({
                         error,
@@ -131,7 +129,7 @@ export default class ProductsList extends Component {
                 ListFooterComponent={this.renderListFooter}
                 renderItem={({ item }) =>
                     <TouchableOpacity onPress={() => {
-                        this.props.navigation.navigate('SingleProduct', {
+                        this.props.navigation.navigate('ProductDetails', {
                             productId: item.id,
                             productName: item.name,
                             productData: item,

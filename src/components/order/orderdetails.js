@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, FlatList, Image, ScrollView, ActivityIndicator 
 import Moment from 'moment';
 import Base64 from '../../utility/base64';
 
-export default class SingleOrder extends Component {
+export default class OrderDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -11,6 +11,9 @@ export default class SingleOrder extends Component {
             error: null,
         };
         orderData = this.props.navigation.getParam('orderData');
+        base_url = this.props.navigation.getParam('base_url');
+        c_key = this.props.navigation.getParam('c_key');
+        c_secret = this.props.navigation.getParam('c_secret');
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -29,7 +32,8 @@ export default class SingleOrder extends Component {
     getProductImage(productId) {
         let productDataJson;
         this.setState({ loading: true });
-        productDataJson = fetch(`https://www.kalashcards.com/wp-json/wc/v3/products/${productId}`, {
+
+        productDataJson = fetch(`${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`, {
             method: 'GET',
             headers: {
                 'Authorization': 'Basic ' + Base64.btoa('ck_20d0fd1bf4b32534250b69076ca57ac75cf51662:cs_76e01499543ded3f5ecd82d9e762d4fa1680c862'),

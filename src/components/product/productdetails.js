@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-export default class SingleProduct extends Component {
+export default class ProductDetails extends Component {
     constructor(props) {
         super(props);
         this.state = { loading: false };
@@ -10,29 +10,6 @@ export default class SingleProduct extends Component {
         c_key = this.props.navigation.getParam('c_key');
         c_secret = this.props.navigation.getParam('c_secret');
     }
-
-    /*
-    async componentDidMount() {
-        return fetch('https://www.kalashcards.com/wp-json/wc/v3/products/' + this.props.navigation.getParam('productId', 1), {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Basic ' + Base64.btoa('ck_20d0fd1bf4b32534250b69076ca57ac75cf51662:cs_76e01499543ded3f5ecd82d9e762d4fa1680c862'),
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        }).then((response) => response.json())
-            .then((responseJson) => {
-                this.setState({
-                    loading: false,
-                    data: responseJson,
-                }, function () {
-
-                });
-
-            }).catch((error) => {
-                console.error(error);
-            });
-    }
-    */
 
     static navigationOptions = ({ navigation }) => {
         return {

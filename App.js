@@ -7,10 +7,10 @@ import { Ionicons } from '@expo/vector-icons';
 import AuthLoadingScreen from './src/components/account/auth'
 import Login from './src/components/account/login'
 import ProductsList from './src/components/product/productslist'
-import SingleProduct from './src/components/product/singleproduct'
+import ProductDetails from './src/components/product/productdetails'
 import EditProduct from './src/components/product/editproduct'
 import OrdersList from './src/components/order/orderslist'
-import SingleOrder from './src/components/order/singleorder';
+import OrderDetails from './src/components/order/orderdetails';
 
 export class App extends Component {
 
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
 
 const ProductNavigator = createStackNavigator({
   Products: ProductsList,
-  SingleProduct: SingleProduct,
+  ProductDetails: ProductDetails,
   EditProduct: EditProduct,
 }, {
   initialRouteName: 'Products',
@@ -55,7 +55,7 @@ const ProductNavigator = createStackNavigator({
 
 const OrdertNavigator = createStackNavigator({
   Orders: OrdersList,
-  SingleOrder: SingleOrder,
+  OrderDetails: OrderDetails,
 }, {
   initialRouteName: 'Orders',
 });

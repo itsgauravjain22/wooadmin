@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Switch, KeyboardAvoidingView, TouchableOpacity, Image, ScrollView, ActivityIndicator, TextInput, Picker, Button } from 'react-native';
+import { StyleSheet, Text, View, Switch, KeyboardAvoidingView, TouchableOpacity, ScrollView, ActivityIndicator, TextInput, Picker, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default class EditProduct extends Component {
