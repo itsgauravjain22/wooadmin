@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Clipboard, Image, ScrollView, ActivityIndicator, Modal, TouchableWithoutFeedbackBase, ToastAndroid } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Clipboard, Image, ScrollView, ActivityIndicator, Modal, ToastAndroid } from 'react-native';
 import Moment from 'moment';
 import { Ionicons } from '@expo/vector-icons';
 import RadioButtons from '../commoncomponents/radiobuttons'
@@ -65,30 +65,13 @@ export default class OrderDetails extends Component {
 
     fetchOrderDetails = () => {
         const url = `${base_url}/wp-json/wc/v3/orders/${orderId}?consumer_key=${c_key}&consumer_secret=${c_secret}`;
-        const orderStatusesurl = `${base_url}/wp-json/wc/v3/reports/orders/totals?consumer_key=${c_key}&consumer_secret=${c_secret}`;
         this.setState({ loading: true });
         fetch(url).then((response) => response.json())
             .then((responseJson) => {
                 this.setState({
                     orderData: responseJson,
                     error: responseJson.code || null,
-                });
-                fetch(orderStatusesurl).then(response => response.json())
-                    .then(responseJson => {
-                        let orderStatusMap = new Map();
-                        if (Array.isArray(responseJson) && responseJson.length > 0) {
-                            if ('slug' in responseJson[0] && 'name' in responseJson[0]) {
-                                responseJson.forEach(item => {
-                                    orderStatusMap.set(item.slug, item.name)
-                                })
-                            }
-                        }
-                        this.setState({
-                            orderStatusOptions: [...orderStatusMap],
-                            orderStatusValue: this.state.orderData.status,
-                            loading: false,
-                        })
-                    })
+                }, this.fetchOrderStatus())
             }).catch((error) => {
                 this.setState({
                     error,
@@ -97,26 +80,54 @@ export default class OrderDetails extends Component {
             });
     }
 
-    getProductPrimaryImage = (productId) => {
-        let productData = null;
+    fetchOrderStatus = () => {
+        const orderStatusesurl = `${base_url}/wp-json/wc/v3/reports/orders/totals?consumer_key=${c_key}&consumer_secret=${c_secret}`;
+        fetch(orderStatusesurl).then(response => response.json())
+            .then(responseJson => {
+                let orderStatusMap = new Map();
+                if (Array.isArray(responseJson) && responseJson.length > 0) {
+                    if ('slug' in responseJson[0] && 'name' in responseJson[0]) {
+                        responseJson.forEach(item => {
+                            orderStatusMap.set(item.slug, item.name)
+                        })
+                    }
+                }
+                this.setState({
+                    orderStatusOptions: [...orderStatusMap],
+                    orderStatusValue: this.state.orderData.status,
+                    loading: false,
+                }, this.fetchOrderProductImages())
+            })
+    }
+
+    fetchOrderProductImages = () => {
+        this.state.orderData.line_items.forEach((item, index) => {
+            this.fetchProductPrimaryImage(item.product_id, index)
+        })
+    }
+
+    fetchProductPrimaryImage = (productId, index) => {
         this.setState({ imageLoading: true });
         let url = `${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`
-        console.log(url);
         fetch(url)
             .then((response) => response.json())
-            .then((responseJson) => {
-                this.setState({
-                    imageLoading: false,
-                    error: responseJson.code || null,
-                });
-                productData = responseJson
-            })
-            .then(() => {
-                return productData ?
-                    ((Array.isArray(productData.images) && productData.images.length) ?
-                        productData.images[0].src : null)
-                    : null;
-
+            .then(responseJson => {
+                if ('images' in responseJson && Array.isArray(responseJson.images) && responseJson.images.length) {
+                    if ('line_items' in this.state.orderData && Array.isArray(this.state.orderData.line_items) && this.state.orderData.line_items.length) {
+                        let modifiedOrderData = this.state.orderData
+                        modifiedOrderData.line_items[index].primary_image_src = responseJson.images[0].src
+                        this.setState({
+                            orderData: modifiedOrderData,
+                            imageLoading: false,
+                            error: responseJson.code || null,
+                        })
+                    }
+                } else {
+                    this.setState({
+                        imageLoading: false,
+                        error: responseJson.code || null,
+                    });
+                }
             })
             .catch((error) => {
                 this.setState({
@@ -129,12 +140,10 @@ export default class OrderDetails extends Component {
     getLineItems = () => {
         let itemArray = [];
         this.state.orderData.line_items.forEach(item => {
-            // let imgSrc = this.getProductPrimaryImage(item.product_id)
-            let imgSrc = null;
             itemArray.push(
                 <View key={item.id} style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white' }}>
                     <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>
-                        <Image source={imgSrc}
+                        <Image source={'primary_image_src' in item?{uri: item.primary_image_src}:null}
                             style={{ height: 100, width: 100 }} resizeMode='contain' />
                     </View>
                     <View style={{ flex: 2, marginTop: 10, marginBottom: 10, justifyContent: "center" }}>
@@ -198,7 +207,7 @@ export default class OrderDetails extends Component {
             .then(responseJson => {
                 if ('code' in responseJson)
                     ToastAndroid.show(`Order Not Updated. Error: ${responseJson.message}`, ToastAndroid.LONG);
-                else if ('status' in responseJson){
+                else if ('status' in responseJson) {
                     this.setState({
                         orderStatusValue: responseJson.status
                     })

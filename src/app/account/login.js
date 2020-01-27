@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, Text, ToastAndroid, ActivityIndicator, View, KeyboardAvoidingView } from 'react-native';
+import {
+    StyleSheet, TextInput, TouchableOpacity, Text, ToastAndroid, ActivityIndicator,
+    Image, View, KeyboardAvoidingView
+} from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 export default class Login extends Component {
@@ -56,7 +59,7 @@ export default class Login extends Component {
         }
     }
 
-    submitButton = async() => {
+    submitButton = async () => {
         if (this.state.loading) return;
 
         this.setState({
@@ -76,13 +79,26 @@ export default class Login extends Component {
         return (
             <KeyboardAvoidingView behavior="padding" style={styles.container}>
                 <View style={styles.inputWrapper}>
+                    <View style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        margin: 10
+                    }}>
+                        <Image
+                            source={require('../../../assets/images/logo.png')}
+                            style={{
+                                height: 150,
+                                width: 150,
+                            }}
+                        />
+                    </View>
                     <TextInput
                         style={styles.input}
-                        placeholder="Website Url (including https)"
+                        placeholder="Woocommerce site url (with https)"
                         autoCorrect={false}
                         autoCapitalize={'none'}
                         returnKeyType={'next'}
-                        placeholderTextColor="white"
+                        placeholderTextColor='#96588a'
                         underlineColorAndroid="transparent"
                         onChangeText={(base_url) => this.setState({ 'base_url': base_url })}
                     />
@@ -92,7 +108,7 @@ export default class Login extends Component {
                         autoCorrect={false}
                         autoCapitalize={'none'}
                         returnKeyType={'next'}
-                        placeholderTextColor="white"
+                        placeholderTextColor='#96588a'
                         underlineColorAndroid="transparent"
                         onChangeText={(c_key) => this.setState({ 'c_key': c_key })}
                     />
@@ -103,7 +119,7 @@ export default class Login extends Component {
                         autoCorrect={false}
                         autoCapitalize={'none'}
                         returnKeyType={'done'}
-                        placeholderTextColor="white"
+                        placeholderTextColor='#96588a'
                         underlineColorAndroid="transparent"
                         onChangeText={(value) => this.setState({ 'c_secret': value })}
                     />
@@ -112,15 +128,15 @@ export default class Login extends Component {
                             activeOpacity={0.7}
                             style={{ marginRight: 10 }}
                             onPress={this.showPass}>
-                            <Text style={{ color: 'white' }}>Show Secret</Text>
+                            <Text style={{ color: '#96588a' }}>Show Secret</Text>
                         </TouchableOpacity>
                     </View>
                     <View>
                         {this.state.loading ? (
-                            <ActivityIndicator size="large" color='white' />
+                            <ActivityIndicator size="large" color='#96588a' />
                         ) : (
                                 <TouchableOpacity style={styles.loginBtn} onPress={this.submitButton}>
-                                    <Text style={{ color: '#96588a', fontWeight: 'bold', fontSize: 16 }}>
+                                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
                                         Login
                                         </Text>
                                 </TouchableOpacity>
@@ -139,31 +155,30 @@ const styles = StyleSheet.create({
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#96588a'
+        backgroundColor: 'white'
     },
     input: {
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        backgroundColor: 'white',
         width: '100%',
         height: 40,
         marginTop: 15,
-        paddingLeft: 45,
-        borderRadius: 20,
-        color: '#ffffff',
+        color: '#96588a',
+        borderBottomColor: '#96588a',
+        borderBottomWidth: 1,
     },
     inputWrapper: {
         width: '80%',
     },
     showPassword: {
         width: '100%',
-        marginTop: 10,
+        marginTop: 2,
         alignItems: 'flex-end'
     },
     loginBtn: {
-        backgroundColor: 'white',
+        backgroundColor: '#96588a',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 15,
         height: 40,
-        borderRadius: 20,
     }
 });
