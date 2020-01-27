@@ -2,20 +2,24 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import Moment from 'moment';
 import * as SecureStore from 'expo-secure-store';
+import { Ionicons } from '@expo/vector-icons';
 import GLOBAL from './orderglobal'
 import SearchBar from '../commoncomponents/searchbar'
 
 export default class OrdersList extends Component {
 
-    static navigationOptions = {
-        headerTitle: 'Orders',
-        headerStyle: {
-            backgroundColor: '#96588a',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-            fontWeight: 'bold',
-        },
+    static navigationOptions = ({ navigation }) => {
+        return {
+            headerTitle: 'Orders',
+            headerRight: () => (
+                <TouchableOpacity
+                    style={{ paddingRight: 20 }}
+                    onPress={() => { navigation.navigate("Settings") }}
+                >
+                    <Ionicons name='md-more' size={25} color='white' />
+                </TouchableOpacity>
+            ),
+        }
     };
 
     constructor(props) {
@@ -33,11 +37,17 @@ export default class OrdersList extends Component {
             c_secret: null,
         };
         GLOBAL.orderlistScreen = this
+        this._isMounted = false;
     }
 
     async componentDidMount() {
-        await this.getCredentials();
-        this.fetchOrderList();
+        this._isMounted = true;
+        this._isMounted && await this.getCredentials();
+        this._isMounted && this.fetchOrderList();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     getCredentials = async () => {
@@ -132,7 +142,7 @@ export default class OrdersList extends Component {
     }
 
     handleSearch = (value) => {
-        this.setState({
+        this._isMounted && this.setState({
             searchValue: value,
             page: 1,
             refreshing: true,

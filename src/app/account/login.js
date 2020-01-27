@@ -68,8 +68,10 @@ export default class Login extends Component {
 
         let authenticated = await this.checkAuthentication();
         if (authenticated) {
-            this.props.navigation.navigate('App');
-            this.setState({ loading: false });
+            this.setState({
+                loading: false
+            }, () => this.props.navigation.navigate('App')
+            );
         } else {
             this.setState({ loading: false });
         }

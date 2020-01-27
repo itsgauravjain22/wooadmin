@@ -12,6 +12,15 @@ export default class SearchBar extends Component {
             barcodeScannerShown: false,
             searchValue: ''
         };
+        this._isMounted = false;
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     getPermissionsAsync = async () => {
@@ -70,7 +79,7 @@ export default class SearchBar extends Component {
     }
 
     handleSearchPress = () => {
-        this.props.onSearchPress(this.state.searchValue)
+        this._isMounted && this.props.onSearchPress(this.state.searchValue)
     }
 
     handleBarcodeOutput = ({ type, data }) => {
@@ -79,7 +88,7 @@ export default class SearchBar extends Component {
             scanned: true,
             barcodeScannerShown: false
         }, () => {
-            this.props.onSearchPress(this.state.searchValue)
+            this._isMounted && this.props.onSearchPress(this.state.searchValue)
         })
     }
 

@@ -27,7 +27,7 @@ export default class App extends Component {
 
 const SettingNavigator = createStackNavigator({
   Settings: Settings,
-},{
+}, {
   initialRouteName: 'Settings',
   defaultNavigationOptions: {
     headerShown: false,
@@ -45,7 +45,7 @@ const ProductNavigator = createStackNavigator({
     headerStyle: {
       backgroundColor: '#96588a',
     },
-    headerTintColor: '#fff',
+    headerTintColor: 'white',
     headerTitleStyle: {
       fontWeight: 'bold',
     }
@@ -55,8 +55,18 @@ const ProductNavigator = createStackNavigator({
 const OrdertNavigator = createStackNavigator({
   Orders: OrdersList,
   OrderDetails: OrderDetails,
+  Settings: SettingNavigator,
 }, {
   initialRouteName: 'Orders',
+  defaultNavigationOptions: {
+    headerStyle: {
+      backgroundColor: '#96588a',
+    },
+    headerTintColor: 'white',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    }
+  }
 });
 
 const TabNavigator = createBottomTabNavigator({

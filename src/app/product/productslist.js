@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator, TouchableOpacity, ToastAndroid } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import GLOBAL from './productglobal'
 import { Ionicons } from '@expo/vector-icons';
@@ -36,11 +36,17 @@ export default class ProductsList extends Component {
             c_secret: null,
         };
         GLOBAL.productlistScreen = this;
+        this._isMounted = false;
     }
 
     async componentDidMount() {
-        await this.getCredentials();
-        this.fetchProductList();
+        this._isMounted = true;
+        this._isMounted && await this.getCredentials();
+        this._isMounted && this.fetchProductList();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     getCredentials = async () => {
@@ -115,7 +121,7 @@ export default class ProductsList extends Component {
     }
 
     handleRefresh = () => {
-        this.setState({
+        this._isMounted && this.setState({
             page: 1,
             refreshing: true,
             data: []
@@ -134,7 +140,7 @@ export default class ProductsList extends Component {
     }
 
     handleSearch = (value) => {
-        this.setState({
+        this._isMounted && this.setState({
             searchValue: value,
             page: 1,
             refreshing: true,
