@@ -1,56 +1,55 @@
 import React, { Component } from 'react';
-import { StatusBar, Platform, StyleSheet, View } from 'react-native';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import { Ionicons } from '@expo/vector-icons';
-import AuthLoadingScreen from './src/components/account/auth'
-import Login from './src/components/account/login'
-import ProductsList from './src/components/product/productslist'
-import ProductDetails from './src/components/product/productdetails'
-import EditProduct from './src/components/product/editproduct'
-import OrdersList from './src/components/order/orderslist'
-import OrderDetails from './src/components/order/orderdetails';
+import AuthLoadingScreen from './src/app/account/auth'
+import Login from './src/app/account/login'
+import ProductsList from './src/app/product/productslist'
+import ProductDetails from './src/app/product/productdetails'
+import EditProduct from './src/app/product/editproduct'
+import OrdersList from './src/app/order/orderslist'
+import OrderDetails from './src/app/order/orderdetails';
+import Settings from './src/app/setting/settings'
 
-export class App extends Component {
+export default class App extends Component {
 
   constructor(props) {
     super(props);
   }
 
-  static navigationOptions = {
-    title: 'Products',
+  render() {
+    return (
+      <MainApp />
+    );
+  }
+}
+
+const SettingNavigator = createStackNavigator({
+  Settings: Settings,
+},{
+  initialRouteName: 'Settings',
+  defaultNavigationOptions: {
+    headerShown: false,
+  }
+})
+
+const ProductNavigator = createStackNavigator({
+  Products: ProductsList,
+  ProductDetails: ProductDetails,
+  EditProduct: EditProduct,
+  Settings: SettingNavigator,
+}, {
+  initialRouteName: 'Products',
+  defaultNavigationOptions: {
     headerStyle: {
       backgroundColor: '#96588a',
     },
     headerTintColor: '#fff',
     headerTitleStyle: {
       fontWeight: 'bold',
-    },
-  };
-
-  render() {
-    return (
-      <View>
-        <Text>Hello</Text>
-      </View>
-    );
+    }
   }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight,
-    backgroundColor: '#efefef',
-  },
-});
-
-const ProductNavigator = createStackNavigator({
-  Products: ProductsList,
-  ProductDetails: ProductDetails,
-  EditProduct: EditProduct,
-}, {
-  initialRouteName: 'Products',
 });
 
 const OrdertNavigator = createStackNavigator({
@@ -96,4 +95,3 @@ const authNavigator = createSwitchNavigator({
 )
 
 const MainApp = createAppContainer(authNavigator);
-export default MainApp;
