@@ -21,26 +21,13 @@ A React Native woocommerce admin application for android currently in developeme
 
 ## Screenshots
 ### **Login Screen**
-![Login Screen](/screenshots/login.png =300px584px)
----
-### **Product List Screen**
-![Product List Screen](/screenshots/product-list.png?raw=true =300x584)
----
-### **Product Details Screen**
-![Product Details Screen](/screenshots/product-details.png?raw=true =300x584 "Product Details Screen")
----
-### **Edit Product Screen**
-![Edit Product Screen](/screenshots/edit-product.png?raw=true =300x584 "Edit Product Screen")
----
-### **Order List Screen**
-![Order List Screen](/screenshots/order-list.png?raw=true =300x584 "Order List Screen")
----
-### **Order Details Screen**
-![Order Details Screen"](/screenshots/order-details.png?raw=true =300x584 "Order Details Screen")
----
-### **Edit Order Screen**
-![Edit Order Screen"](/screenshots/edit-order.png?raw=true =300x584 "Edit Order Screen")
----
-### **Logout Screen**
-![Logout Screen"](/screenshots/logout.png?raw=true =300x584 "Logout Screen")
----
+<p align="center">
+<img src="/screenshots/login.png"  width="50%" height="50%" />
+<img src="/screenshots/product-list.png"  width="50%" height="50%" />
+<img src="/screenshots/product-details.png"  width="50%" height="50%" />
+<img src="/screenshots/edit-product.png"  width="50%" height="50%" />
+<img src="/screenshots/order-list.png"  width="50%" height="50%" />
+<img src="/screenshots/order-details.png"  width="50%" height="50%" />
+<img src="/screenshots/edit-order.png"  width="50%" height="50%" />
+<img src="/screenshots/logout.png"  width="50%" height="50%" />
+</p>
