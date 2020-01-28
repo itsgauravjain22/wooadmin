@@ -1,4 +1,4 @@
 module.exports = {
-    orderlistScreen: null,
+    orderslistScreen: null,
     orderdetailsScreen: null,
  };

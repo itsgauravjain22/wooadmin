@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import Moment from 'moment';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
-import GLOBAL from './orderglobal'
+import GLOBAL from './customerglobal'
 import SearchBar from '../commoncomponents/searchbar'
 
 export default class OrdersList extends Component {
 
     static navigationOptions = ({ navigation }) => {
         return {
-            headerTitle: 'Orders',
+            headerTitle: 'Customers',
             headerRight: () => (
                 <TouchableOpacity
                     style={{ paddingRight: 20 }}
@@ -36,14 +36,14 @@ export default class OrdersList extends Component {
             c_key: null,
             c_secret: null,
         };
-        GLOBAL.orderslistScreen = this
+        GLOBAL.customerslistScreen = this
         this._isMounted = false;
     }
 
     async componentDidMount() {
         this._isMounted = true;
         this._isMounted && await this.getCredentials();
-        this._isMounted && this.fetchOrderList();
+        this._isMounted && this.fetchCustomersList();
     }
 
     componentWillUnmount() {
@@ -60,9 +60,9 @@ export default class OrdersList extends Component {
         })
     }
 
-    fetchOrderList = () => {
+    fetchCustomersList = () => {
         const { base_url, c_key, c_secret, page, searchValue } = this.state;
-        let url = `${base_url}/wp-json/wc/v3/orders?per_page=20&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`;
+        let url = `${base_url}/wp-json/wc/v3/customers?page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}&order=desc&orderby=registered_date&per_page=20`;
 
         if (searchValue) {
             url = url.concat(`&search=${searchValue}`)
@@ -127,7 +127,7 @@ export default class OrdersList extends Component {
             data: []
         },
             () => {
-                this.fetchOrderList();
+                this.fetchCustomersList();
             }
         )
     }
@@ -136,7 +136,7 @@ export default class OrdersList extends Component {
         this.setState({
             page: this.state.page + 1,
         }, () => {
-            this.fetchOrderList();
+            this.fetchCustomersList();
         }
         )
     }
@@ -148,33 +148,36 @@ export default class OrdersList extends Component {
             refreshing: true,
             data: []
         }, () => {
-            this.fetchOrderList()
+            this.fetchCustomersList()
         })
     }
 
     renderItem = ({ item }) => {
         return (
             <TouchableOpacity onPress={() => {
-                this.props.navigation.navigate('OrderDetails', {
-                    orderId: item.id,
-                    base_url: this.state.base_url,
-                    c_key: this.state.c_key,
-                    c_secret: this.state.c_secret
+                this.props.navigation.navigate('CustomerDetails', {
+                    customerId: item.id,
                 });
             }}>
-                <View
-                    style={{
-                        flex: 1,
-                        paddingTop: 10,
-                        paddingBottom: 10,
-                        backgroundColor: 'white',
-                        justifyContent: 'center',
-                    }}>
-                    <View style={{ marginLeft: 10 }}>
-                        <Text>{Moment(item.date_created).format('dddd, Do MMM YYYY h:m:s a')}</Text>
-                        <Text style={styles.titleText}>#{item.number} {item.billing.first_name} {item.billing.last_name}</Text>
-                        <Text>Status: {item.status}</Text>
-                        <Text>Total: {item.currency_symbol ? item.currency_symbol : item.currency}{item.total}</Text>
+                <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white' }}>
+                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                        {item.avatar_url
+                            ? <Image
+                                source={{ uri: item.avatar_url }}
+                                style={{ height: 80, width: 80 }}
+                                resizeMode='contain'
+                            />
+                            : <Ionicons name='md-person' size={80} color='black' />
+                        }
+                    </View>
+                    <View style={{ flex: 3, marginTop: 10, marginBottom: 10, justifyContent: "center" }}>
+                        <View style={{ marginLeft: 10 }}>
+                            <Text style={styles.titleText}>{item.username}</Text>
+                            <Text>Name: {item.first_name} {item.last_name}</Text>
+                            <Text>Email: {item.email}</Text>
+                            <Text>Is Paying: {item.is_paying_customer?'Yes':'No'}</Text>
+                            <Text>Created: {Moment(item.date_created).format('dddd, Do MMM YYYY h:m:s a')}</Text>
+                        </View>
                     </View>
                 </View>
             </TouchableOpacity>

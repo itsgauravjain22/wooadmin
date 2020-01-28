@@ -217,7 +217,7 @@ export default class OrderDetails extends Component {
                     ToastAndroid.show(`Order Not Updated`, ToastAndroid.LONG)
                 }
                 this.fetchOrderDetails()
-                GLOBAL.orderlistScreen.handleRefresh()
+                GLOBAL.orderslistScreen.handleRefresh()
             }).catch((error) => {
                 ToastAndroid.show(`Order Not Updated`, ToastAndroid.LONG)
                 this.fetchOrderDetails()
@@ -304,7 +304,6 @@ export default class OrderDetails extends Component {
                     </View>
                     {this.displayOrderStatusModal()}
                 </View>
-
             </View>
         )
     }

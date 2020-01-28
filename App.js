@@ -10,6 +10,8 @@ import ProductDetails from './src/app/product/productdetails'
 import EditProduct from './src/app/product/editproduct'
 import OrdersList from './src/app/order/orderslist'
 import OrderDetails from './src/app/order/orderdetails';
+import CustomersList from './src/app/customer/customerslist'
+import CustomerDetails from './src/app/customer/customerdetails'
 import Settings from './src/app/setting/settings'
 
 export default class App extends Component {
@@ -33,6 +35,23 @@ const SettingNavigator = createStackNavigator({
     headerShown: false,
   }
 })
+
+const CustomerNavigator = createStackNavigator({
+  Customers: CustomersList,
+  CustomerDetails: CustomerDetails,
+  Settings: SettingNavigator,
+}, {
+  initialRouteName: 'Customers',
+  defaultNavigationOptions: {
+    headerStyle: {
+      backgroundColor: '#96588a',
+    },
+    headerTintColor: 'white',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    }
+  }
+});
 
 const ProductNavigator = createStackNavigator({
   Products: ProductsList,
@@ -71,7 +90,8 @@ const OrdertNavigator = createStackNavigator({
 
 const TabNavigator = createBottomTabNavigator({
   Products: ProductNavigator,
-  Orders: OrdertNavigator
+  Orders: OrdertNavigator,
+  Customers: CustomerNavigator
 },
   {
     initialRouteName: 'Products',
@@ -81,9 +101,11 @@ const TabNavigator = createBottomTabNavigator({
         let IconComponent = Ionicons;
         let iconName;
         if (routeName === 'Products') {
-          iconName = focused ? 'md-card' : 'md-card';
+          iconName ='md-card';
         } else if (routeName === 'Orders') {
-          iconName = focused ? 'md-paper' : 'md-paper';
+          iconName = 'md-paper';
+        }  else if (routeName === 'Customers') {
+          iconName = 'md-person';
         }
         return <IconComponent name={iconName} size={25} color={tintColor} />;
       }

@@ -35,7 +35,7 @@ export default class ProductsList extends Component {
             c_key: null,
             c_secret: null,
         };
-        GLOBAL.productlistScreen = this;
+        GLOBAL.productslistScreen = this;
         this._isMounted = false;
     }
 

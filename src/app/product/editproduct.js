@@ -490,7 +490,7 @@ export default class EditProduct extends Component {
                 })
             });
         GLOBAL.productdetailsScreen.fetchProductDetails()
-        GLOBAL.productlistScreen.handleRefresh()
+        GLOBAL.productslistScreen.handleRefresh()
     }
 }
 
