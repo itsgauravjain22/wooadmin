@@ -1,17 +1,22 @@
 {
-  "name": "wooandroid",
-  "displayName": "WooAndroid",
+  "name": "wooadmin",
+  "displayName": "WooAdmin",
   "expo": {
-    "name": "wooandroid",
-    "slug": "expo-template-bare",
-    "privacy": "unlisted",
+    "name": "WooAdmin",
+    "slug": "wooadmin",
+    "privacy": "public",
     "sdkVersion": "36.0.0",
     "version": "1.0.0",
-    "entryPoint": "node_modules/expo/AppEntry.js",
+    "entryPoint": "./node_modules/expo/AppEntry.js",
     "platforms": [
-      "ios",
-      "android",
-      "web"
-    ]
+      "android"
+    ],
+    "githubUrl": "https://github.com/itsgauravjain22/wooadmin",
+    "icon": "./assets/images/logo.png",
+    "description": "A react native woocommerce admin app.",
+    "android": {
+      "package": "com.wooadmin.wooadmin"
+    },
+    "owner": "itsgauravjain22"
   }
 }

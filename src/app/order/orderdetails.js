@@ -142,7 +142,7 @@ export default class OrderDetails extends Component {
         this.state.orderData.line_items.forEach(item => {
             itemArray.push(
                 <View key={item.id} style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white' }}>
-                    <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>
+                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                         <Image source={'primary_image_src' in item?{uri: item.primary_image_src}:null}
                             style={{ height: 100, width: 100 }} resizeMode='contain' />
                     </View>

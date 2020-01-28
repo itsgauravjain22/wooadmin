@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
     StyleSheet, TextInput, TouchableOpacity, Text, ToastAndroid, ActivityIndicator,
-    Image, View, KeyboardAvoidingView
+    Image, View, KeyboardAvoidingView, ScrollView
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
@@ -79,73 +79,77 @@ export default class Login extends Component {
 
     render() {
         return (
-            <KeyboardAvoidingView behavior="padding" style={styles.container}>
-                <View style={styles.inputWrapper}>
-                    <View style={{
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        margin: 10
-                    }}>
-                        <Image
-                            source={require('../../../assets/images/logo.png')}
-                            style={{
-                                height: 150,
-                                width: 150,
-                            }}
-                        />
-                    </View>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Woocommerce site url (with https)"
-                        autoCorrect={false}
-                        autoCapitalize={'none'}
-                        returnKeyType={'next'}
-                        placeholderTextColor='#96588a'
-                        underlineColorAndroid="transparent"
-                        onChangeText={(base_url) => this.setState({ 'base_url': base_url })}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Consumer Key"
-                        autoCorrect={false}
-                        autoCapitalize={'none'}
-                        returnKeyType={'next'}
-                        placeholderTextColor='#96588a'
-                        underlineColorAndroid="transparent"
-                        onChangeText={(c_key) => this.setState({ 'c_key': c_key })}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Consumer Secret"
-                        secureTextEntry={this.state.showPass}
-                        autoCorrect={false}
-                        autoCapitalize={'none'}
-                        returnKeyType={'done'}
-                        placeholderTextColor='#96588a'
-                        underlineColorAndroid="transparent"
-                        onChangeText={(value) => this.setState({ 'c_secret': value })}
-                    />
-                    <View style={styles.showPassword}>
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            style={{ marginRight: 10 }}
-                            onPress={this.showPass}>
-                            <Text style={{ color: '#96588a' }}>Show Secret</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View>
-                        {this.state.loading ? (
-                            <ActivityIndicator size="large" color='#96588a' />
-                        ) : (
-                                <TouchableOpacity style={styles.loginBtn} onPress={this.submitButton}>
-                                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
-                                        Login
-                                        </Text>
+            <KeyboardAvoidingView behavior="padding" style={styles.container} enabled>
+                <ScrollView>
+                    <View style={styles.innerContainer}>
+                        <View style={styles.inputWrapper}>
+                            <View style={{
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                margin: 15
+                            }}>
+                                <Image
+                                    source={require('../../../assets/images/logo.png')}
+                                    style={{
+                                        height: 150,
+                                        width: 150,
+                                    }}
+                                />
+                            </View>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Woocommerce site url (with https)"
+                                autoCorrect={false}
+                                autoCapitalize={'none'}
+                                returnKeyType={'next'}
+                                placeholderTextColor='#96588a'
+                                underlineColorAndroid="transparent"
+                                onChangeText={(base_url) => this.setState({ 'base_url': base_url })}
+                            />
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Consumer Key"
+                                autoCorrect={false}
+                                autoCapitalize={'none'}
+                                returnKeyType={'next'}
+                                placeholderTextColor='#96588a'
+                                underlineColorAndroid="transparent"
+                                onChangeText={(c_key) => this.setState({ 'c_key': c_key })}
+                            />
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Consumer Secret"
+                                secureTextEntry={this.state.showPass}
+                                autoCorrect={false}
+                                autoCapitalize={'none'}
+                                returnKeyType={'done'}
+                                placeholderTextColor='#96588a'
+                                underlineColorAndroid="transparent"
+                                onChangeText={(value) => this.setState({ 'c_secret': value })}
+                            />
+                            <View style={styles.showPassword}>
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    style={{ paddingRight: 10, paddingTop: 10, paddingBottom: 15 }}
+                                    onPress={this.showPass}>
+                                    <Text style={{ color: '#96588a' }}>Show Secret</Text>
                                 </TouchableOpacity>
-                            )}
+                            </View>
+                            <View>
+                                {this.state.loading ? (
+                                    <ActivityIndicator size="large" color='#96588a' />
+                                ) : (
+                                        <TouchableOpacity style={styles.loginBtn} onPress={this.submitButton}>
+                                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
+                                                Login
+                                        </Text>
+                                        </TouchableOpacity>
+                                    )}
 
+                            </View>
+                        </View>
                     </View>
-                </View>
+                </ScrollView>
             </KeyboardAvoidingView >
         )
     }
@@ -153,27 +157,32 @@ export default class Login extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        width: '100%',
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flex: 1,
+        flexDirection: 'column',
         backgroundColor: 'white'
+    },
+    innerContainer: {
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    inputWrapper: {
+        marginTop: 80,
+        marginBottom: 50,
+        width: '80%'
     },
     input: {
         backgroundColor: 'white',
         width: '100%',
-        height: 40,
-        marginTop: 15,
+        height: 50,
+        marginTop: 10,
         color: '#96588a',
         borderBottomColor: '#96588a',
         borderBottomWidth: 1,
     },
-    inputWrapper: {
-        width: '80%',
-    },
     showPassword: {
         width: '100%',
-        marginTop: 2,
+        marginTop: 5,
         alignItems: 'flex-end'
     },
     loginBtn: {
@@ -181,6 +190,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 15,
-        height: 40,
+        height: 50,
     }
 });

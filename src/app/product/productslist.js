@@ -162,7 +162,7 @@ export default class ProductsList extends Component {
                 });
             }}>
                 <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white' }}>
-                    <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>
+                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                         <Image source={(Array.isArray(item.images) && item.images.length) ?
                             { uri: item.images[0].src } :
                             require('../../../assets/images/blank_product.png')}

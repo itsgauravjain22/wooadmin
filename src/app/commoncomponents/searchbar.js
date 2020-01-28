@@ -46,29 +46,31 @@ export default class SearchBar extends Component {
                             onBarCodeScanned={this.handleBarcodeOutput}
                             style={StyleSheet.absoluteFillObject, { flex: 1, alignItems: 'center', justifyContent: 'center' }}
                         >
-                            <Text style={{
-                                fontSize: 25,
-                                fontWeight: 'bold',
-                                margin: 10,
-                                textAlign: 'center',
-                                width: '70%',
-                                color: 'white',
-                            }}
-                            >Scan Barcode</Text>
-                            <View
-                                style={{
-                                    width: width < height ? 0.8 * width : 0.8 * height,
-                                    height: width < height ? 0.8 * width : 0.8 * height,
-                                    backgroundColor: 'transparent',
-                                    borderColor: 'white',
-                                    borderWidth: 1,
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                                <Text style={{
+                                    fontSize: 25,
+                                    fontWeight: 'bold',
+                                    margin: 10,
+                                    textAlign: 'center',
+                                    width: '70%',
+                                    color: 'white',
                                 }}
-                            />
-                            <TouchableOpacity
-                                onPress={() => this.setState({ barcodeScannerShown: false })}
-                            >
-                                <Ionicons name='md-close-circle-outline' height size={60} color='white' />
-                            </TouchableOpacity>
+                                >Scan Barcode</Text>
+                                <View
+                                    style={{
+                                        width: width < height ? 0.6 * width : 0.6 * height,
+                                        height: width < height ? 0.6 * width : 0.6 * height,
+                                        backgroundColor: 'transparent',
+                                        borderColor: 'white',
+                                        borderWidth: 1,
+                                    }}
+                                />
+                                <TouchableOpacity
+                                    onPress={() => this.setState({ barcodeScannerShown: false })}
+                                >
+                                    <Ionicons name='md-close-circle-outline' height size={60} color='white' />
+                                </TouchableOpacity>
+                            </View>
                         </BarCodeScanner>
                     </View>
                 </Modal>)
