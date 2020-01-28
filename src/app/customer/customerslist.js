@@ -167,7 +167,7 @@ export default class OrdersList extends Component {
                                 style={{ height: 80, width: 80 }}
                                 resizeMode='contain'
                             />
-                            : <Ionicons name='md-person' size={80} color='black' />
+                            : <Ionicons name='md-person' size={80} color='gray' />
                         }
                     </View>
                     <View style={{ flex: 3, marginTop: 10, marginBottom: 10, justifyContent: "center" }}>

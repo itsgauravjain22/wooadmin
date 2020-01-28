@@ -163,11 +163,14 @@ export default class ProductsList extends Component {
             }}>
                 <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white' }}>
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                        <Image source={(Array.isArray(item.images) && item.images.length) ?
-                            { uri: item.images[0].src } :
-                            require('../../../assets/images/blank_product.png')}
-                            onError={(e) => { this.props.source = require('../../../assets/images/blank_product.png') }}
-                            style={{ height: 115, width: 115 }} resizeMode='contain' />
+                        {(Array.isArray(item.images) && item.images.length)
+                            ? <Image
+                                source={{ uri: item.images[0].src }}
+                                style={{ height: 115, width: 115 }}
+                                resizeMode='contain'
+                            />
+                            : <Ionicons name='logo-dropbox' size={100} color='gray' />
+                        }
                     </View>
                     <View style={{ flex: 2, marginTop: 10, marginBottom: 10, justifyContent: "center" }}>
                         <View style={{ marginLeft: 10 }}>

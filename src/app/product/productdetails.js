@@ -4,6 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import GLOBAL from './productglobal'
 
 export default class ProductDetails extends Component {
+
+    static navigationOptions = ({ navigation }) => {
+        return {
+            title: navigation.getParam('productName', 'Product'),
+        };
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -22,12 +29,6 @@ export default class ProductDetails extends Component {
             this.fetchProductDetails()
         });
     }
-
-    static navigationOptions = ({ navigation }) => {
-        return {
-            title: navigation.getParam('productName', 'Product'),
-        };
-    };
 
     fetchProductDetails = () => {
         const url = `${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`;
@@ -52,11 +53,16 @@ export default class ProductDetails extends Component {
         if ('images' in this.state.productData) {
             let productImagesData = [];
             this.state.productData.images.forEach(item => {
-                productImagesData.push(
-                    <Image key={`image_${item.id}`} source={(item) ? { uri: item.src } : require('../../../assets/images/blank_product.png')}
-                        onError={(e) => { this.props.source = require('../../../assets/images/blank_product.png') }}
-                        style={{ width: 150, height: 150 }} resizeMode='contain' />
-                )
+                if ('src' in item) {
+                    productImagesData.push(
+                        <Image
+                            key={`image_${item.id}`}
+                            source={{ uri: item.src }}
+                            style={{ width: 150, height: 150 }}
+                            resizeMode='contain'
+                        />
+                    )
+                }
             });
             return <ScrollView horizontal={true}>{productImagesData}</ScrollView>
         }
@@ -166,9 +172,9 @@ export default class ProductDetails extends Component {
                                         `x${this.state.productData.dimensions.width}`
                                         : null
                                     : null}
-                                {('dimensions' in this.state.productData) 
+                                {('dimensions' in this.state.productData)
                                     ? (this.state.productData.dimensions.length)
-                                        ?`x${this.state.productData.dimensions.height}`
+                                        ? `x${this.state.productData.dimensions.height}`
                                         : null
                                     : null}
                             </Text>

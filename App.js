@@ -5,6 +5,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { Ionicons } from '@expo/vector-icons';
 import AuthLoadingScreen from './src/app/account/auth'
 import Login from './src/app/account/login'
+import Reports from './src/app/report/reports'
 import ProductsList from './src/app/product/productslist'
 import ProductDetails from './src/app/product/productdetails'
 import EditProduct from './src/app/product/editproduct'
@@ -71,7 +72,7 @@ const ProductNavigator = createStackNavigator({
   }
 });
 
-const OrdertNavigator = createStackNavigator({
+const OrderNavigator = createStackNavigator({
   Orders: OrdersList,
   OrderDetails: OrderDetails,
   Settings: SettingNavigator,
@@ -88,19 +89,38 @@ const OrdertNavigator = createStackNavigator({
   }
 });
 
+const reportNavigator = createStackNavigator({
+  Reports: Reports,
+  Settings: SettingNavigator,
+}, {
+  initialRouteName: 'Reports',
+  defaultNavigationOptions: {
+    headerStyle: {
+      backgroundColor: '#96588a',
+    },
+    headerTintColor: 'white',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    }
+  }
+});
+
 const TabNavigator = createBottomTabNavigator({
+  Reports: reportNavigator,
+  Orders: OrderNavigator,
   Products: ProductNavigator,
-  Orders: OrdertNavigator,
   Customers: CustomerNavigator
 },
   {
-    initialRouteName: 'Products',
+    initialRouteName: 'Reports',
     defaultNavigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused, horizontal, tintColor }) => {
         const { routeName } = navigation.state;
         let IconComponent = Ionicons;
         let iconName;
-        if (routeName === 'Products') {
+        if (routeName === 'Reports') {
+          iconName ='md-stats';
+        } else if (routeName === 'Products') {
           iconName ='md-card';
         } else if (routeName === 'Orders') {
           iconName = 'md-paper';
