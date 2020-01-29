@@ -377,7 +377,7 @@ export default class EditProduct extends Component {
     handleDateOnSaleFrom = (event, date) => {
         date = date ? date.toISOString() : "";
         this.setState({
-            showDateOnSaleFrom: Platform.OS === 'ios' ? true : false,
+            showDateOnSaleFrom: false,
             dateOnSaleFrom: date,
         })
     }
@@ -391,7 +391,7 @@ export default class EditProduct extends Component {
     handleDateOnSaleTo = (event, date) => {
         date = date ? date.toISOString() : "";
         this.setState({
-            showDateOnSaleTo: Platform.OS === 'ios' ? true : false,
+            showDateOnSaleTo: false,
             dateOnSaleTo: date,
         })
     }
