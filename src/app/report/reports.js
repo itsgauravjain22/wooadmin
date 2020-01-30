@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as SecureStore from 'expo-secure-store';
-import { VictoryChart, VictoryTheme, VictoryBar, VictoryAxis } from 'victory-native';
+import { VictoryChart, VictoryBar, VictoryPie, VictoryAxis, VictoryLabel } from 'victory-native';
 import moment from 'moment';
 
 export default class Reports extends Component {
@@ -19,6 +19,7 @@ export default class Reports extends Component {
             base_url: null,
             c_key: null,
             c_secret: null,
+            refreshing: false,
             showFromDateSelector: false,
             fromDate: moment().subtract(7, 'days').toDate(),
             showToDateSelector: false,
@@ -56,7 +57,18 @@ export default class Reports extends Component {
 
     render() {
         return (
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView
+                style={{ flex: 1 }}
+                horizontal={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.isSalesTotalsReportDataReady && this.state.isOrdersTotalsReportDataReady &&
+                            this.state.isCustomersTotalsReportDataReady && this.state.isReviewsTotalsReportDataReady &&
+                            this.state.isproductsTotalsReportDataReady && this.state.isCouponsTotalsReportDataReady}
+                        onRefresh={this.fetchAllReports}
+                    />
+                }
+            >
                 {this.displayDateSelector()}
                 {this.displaySalesTotalsReportSection()}
                 {this.displayOrdersTotalsReportSection()}
@@ -91,10 +103,10 @@ export default class Reports extends Component {
         const { base_url, c_key, c_secret } = this.state;
         let url = `${base_url}/wp-json/wc/v3/reports/sales?consumer_key=${c_key}&consumer_secret=${c_secret}`;
         if (this.state.fromDate) {
-            url+=`&date_min=${moment(this.state.fromDate).format('YYYY-MM-DD')}`
+            url += `&date_min=${moment(this.state.fromDate).format('YYYY-MM-DD')}`
         }
         if (this.state.toDate) {
-            url+=`&date_max=${moment(this.state.toDate).format('YYYY-MM-DD')}`
+            url += `&date_max=${moment(this.state.toDate).format('YYYY-MM-DD')}`
         }
         this.setState({ isSalesTotalsReportDataReady: false });
         fetch(url).then((response) => response.json())
@@ -341,6 +353,30 @@ export default class Reports extends Component {
     }
 
     displaySalesTotalsReportSection = () => {
+        let salesByDateData = []
+        let ordersByDateData = []
+        let itemsByDateData = []
+        let customersByDateData = []
+        if (this.state.isSalesTotalsReportDataReady) {
+            Object.keys(this.state.salesTotalsReportData[0].totals).forEach(key => {
+                salesByDateData.push({
+                    "x": key,
+                    "y": Number(this.state.salesTotalsReportData[0].totals[key].sales)
+                })
+                ordersByDateData.push({
+                    "x": key,
+                    "y": Number(this.state.salesTotalsReportData[0].totals[key].orders)
+                })
+                itemsByDateData.push({
+                    "x": key,
+                    "y": Number(this.state.salesTotalsReportData[0].totals[key].items)
+                })
+                customersByDateData.push({
+                    "x": key,
+                    "y": Number(this.state.salesTotalsReportData[0].totals[key].customers)
+                })
+            })
+        }
 
         return (
             <View style={styles.section}>
@@ -357,6 +393,162 @@ export default class Reports extends Component {
                             <Text>Total Refund: {this.state.salesTotalsReportData[0].total_refunds}</Text>
                             <Text>Total Discount: {this.state.salesTotalsReportData[0].total_discount}</Text>
                             <Text>Total Customers: {this.state.salesTotalsReportData[0].total_customers}</Text>
+                            <VictoryChart
+                                domainPadding={10}
+                                padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
+                            >
+                                <VictoryAxis
+                                    label='Sales'
+                                    axisLabelComponent={<VictoryLabel dy={-15} />}
+                                    style={{
+                                        axis: { stroke: 'black' },
+                                        axisLabel: { fontSize: 16, fill: 'black' },
+                                        ticks: { stroke: 'black' },
+                                        tickLabels: {
+                                            fontSize: 12, fill: 'black'
+                                            , angle: -45
+                                        },
+                                        grid: { stroke: 'gray', strokeWidth: 0.25 }
+                                    }}
+                                    dependentAxis
+                                />
+                                <VictoryAxis
+                                    label='Date'
+                                    style={{
+                                        axis: { stroke: 'black' },
+                                        axisLabel: { fontSize: 16, fill: 'black' },
+                                        ticks: { stroke: 'none' },
+                                        tickLabels: { fill: 'none' },
+                                    }}
+                                />
+                                <VictoryBar
+                                    data={salesByDateData}
+                                    x='x'
+                                    y='y'
+                                    style={{
+                                        data: { fill: '#96588a' }
+                                    }}
+                                    barRatio={1}
+                                    horizontal={false}
+                                />
+                            </VictoryChart>
+                            <VictoryChart
+                                domainPadding={10}
+                                padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
+                            >
+                                <VictoryAxis
+                                    label='Orders'
+                                    axisLabelComponent={<VictoryLabel dy={-15} />}
+                                    style={{
+                                        axis: { stroke: 'black' },
+                                        axisLabel: { fontSize: 16, fill: 'black' },
+                                        ticks: { stroke: 'black' },
+                                        tickLabels: {
+                                            fontSize: 12, fill: 'black'
+                                            , angle: -45
+                                        },
+                                        grid: { stroke: 'gray', strokeWidth: 0.25 }
+                                    }}
+                                    dependentAxis
+                                />
+                                <VictoryAxis
+                                    label='Date'
+                                    style={{
+                                        axis: { stroke: 'black' },
+                                        axisLabel: { fontSize: 16, fill: 'black' },
+                                        ticks: { stroke: 'none' },
+                                        tickLabels: { fill: 'none' },
+                                    }}
+                                />
+                                <VictoryBar
+                                    data={ordersByDateData}
+                                    x='x'
+                                    y='y'
+                                    style={{
+                                        data: { fill: '#96588a' }
+                                    }}
+                                    barRatio={1}
+                                    horizontal={false}
+                                />
+                            </VictoryChart>
+                            <VictoryChart
+                                domainPadding={10}
+                                padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
+                            >
+                                <VictoryAxis
+                                    label='Items'
+                                    axisLabelComponent={<VictoryLabel dy={-15} />}
+                                    style={{
+                                        axis: { stroke: 'black' },
+                                        axisLabel: { fontSize: 16, fill: 'black' },
+                                        ticks: { stroke: 'black' },
+                                        tickLabels: {
+                                            fontSize: 12, fill: 'black'
+                                            , angle: -45
+                                        },
+                                        grid: { stroke: 'gray', strokeWidth: 0.25 }
+                                    }}
+                                    dependentAxis
+                                />
+                                <VictoryAxis
+                                    label='Date'
+                                    style={{
+                                        axis: { stroke: 'black' },
+                                        axisLabel: { fontSize: 16, fill: 'black' },
+                                        ticks: { stroke: 'none' },
+                                        tickLabels: { fill: 'none' },
+                                    }}
+                                />
+                                <VictoryBar
+                                    data={itemsByDateData}
+                                    x='x'
+                                    y='y'
+                                    style={{
+                                        data: { fill: '#96588a' }
+                                    }}
+                                    barRatio={1}
+                                    horizontal={false}
+                                />
+                            </VictoryChart>
+                            <VictoryChart
+                                domainPadding={10}
+                                padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
+                            >
+                                <VictoryAxis
+                                    label='Customers'
+                                    axisLabelComponent={<VictoryLabel dy={-15} />}
+                                    style={{
+                                        axis: { stroke: 'black' },
+                                        axisLabel: { fontSize: 16, fill: 'black' },
+                                        ticks: { stroke: 'black' },
+                                        tickLabels: {
+                                            fontSize: 12, fill: 'black'
+                                            , angle: -45
+                                        },
+                                        grid: { stroke: 'gray', strokeWidth: 0.25 }
+                                    }}
+                                    dependentAxis
+                                />
+                                <VictoryAxis
+                                    label='Date'
+                                    style={{
+                                        axis: { stroke: 'black' },
+                                        axisLabel: { fontSize: 16, fill: 'black' },
+                                        ticks: { stroke: 'none' },
+                                        tickLabels: { fill: 'none' },
+                                    }}
+                                />
+                                <VictoryBar
+                                    data={customersByDateData}
+                                    x='x'
+                                    y='y'
+                                    style={{
+                                        data: { fill: '#96588a' }
+                                    }}
+                                    barRatio={1}
+                                    horizontal={false}
+                                />
+                            </VictoryChart>
                         </>
                         : <View style={{
                             flex: -1, justifyContent: "center",
@@ -375,9 +567,8 @@ export default class Reports extends Component {
                 <Text style={styles.titleText}>All Time Total Orders by Status</Text>
                 {this.state.isOrdersTotalsReportDataReady
                     ? <VictoryChart
-                        theme={VictoryTheme.material}
                         domainPadding={10}
-                        padding={{ left: 50, bottom: 90, right: 50, top: 50 }}
+                        padding={{ left: 40, bottom: 90, right: 50, top: 20 }}
                     >
                         <VictoryAxis
                             style={{
@@ -438,13 +629,20 @@ export default class Reports extends Component {
             <View style={styles.section}>
                 <Text style={styles.titleText}>All Time Total Customers Report</Text>
                 {this.state.isCustomersTotalsReportDataReady
-                    ? customersTotalsReportDataArray
+                    ? <VictoryPie
+                        data={this.state.customersTotalsReportData}
+                        x='name'
+                        y='total'
+                        colorScale={['#96588a', '#CBACC5']}
+                        labels={({ datum }) => `${datum.name} ${datum._y}`}
+                    />
                     : <View style={{
                         flex: -1, justifyContent: "center",
                         alignContent: "center", padding: 20
                     }}>
                         <ActivityIndicator color='#96588a' size='large' />
-                    </View>}
+                    </View>
+                }
             </View >
         )
     }
