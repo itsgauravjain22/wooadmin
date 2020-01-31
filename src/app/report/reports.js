@@ -62,9 +62,7 @@ export default class Reports extends Component {
                 horizontal={false}
                 refreshControl={
                     <RefreshControl
-                        refreshing={this.state.isSalesTotalsReportDataReady && this.state.isOrdersTotalsReportDataReady &&
-                            this.state.isCustomersTotalsReportDataReady && this.state.isReviewsTotalsReportDataReady &&
-                            this.state.isproductsTotalsReportDataReady && this.state.isCouponsTotalsReportDataReady}
+                        refreshing={false}
                         onRefresh={this.fetchAllReports}
                     />
                 }
@@ -393,162 +391,170 @@ export default class Reports extends Component {
                             <Text>Total Refund: {this.state.salesTotalsReportData[0].total_refunds}</Text>
                             <Text>Total Discount: {this.state.salesTotalsReportData[0].total_discount}</Text>
                             <Text>Total Customers: {this.state.salesTotalsReportData[0].total_customers}</Text>
-                            <VictoryChart
-                                domainPadding={10}
-                                padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
-                            >
-                                <VictoryAxis
-                                    label='Sales'
-                                    axisLabelComponent={<VictoryLabel dy={-15} />}
-                                    style={{
-                                        axis: { stroke: 'black' },
-                                        axisLabel: { fontSize: 16, fill: 'black' },
-                                        ticks: { stroke: 'black' },
-                                        tickLabels: {
-                                            fontSize: 12, fill: 'black'
-                                            , angle: -45
-                                        },
-                                        grid: { stroke: 'gray', strokeWidth: 0.25 }
-                                    }}
-                                    dependentAxis
-                                />
-                                <VictoryAxis
-                                    label='Date'
-                                    style={{
-                                        axis: { stroke: 'black' },
-                                        axisLabel: { fontSize: 16, fill: 'black' },
-                                        ticks: { stroke: 'none' },
-                                        tickLabels: { fill: 'none' },
-                                    }}
-                                />
-                                <VictoryBar
-                                    data={salesByDateData}
-                                    x='x'
-                                    y='y'
-                                    style={{
-                                        data: { fill: '#96588a' }
-                                    }}
-                                    barRatio={1}
-                                    horizontal={false}
-                                />
-                            </VictoryChart>
-                            <VictoryChart
-                                domainPadding={10}
-                                padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
-                            >
-                                <VictoryAxis
-                                    label='Orders'
-                                    axisLabelComponent={<VictoryLabel dy={-15} />}
-                                    style={{
-                                        axis: { stroke: 'black' },
-                                        axisLabel: { fontSize: 16, fill: 'black' },
-                                        ticks: { stroke: 'black' },
-                                        tickLabels: {
-                                            fontSize: 12, fill: 'black'
-                                            , angle: -45
-                                        },
-                                        grid: { stroke: 'gray', strokeWidth: 0.25 }
-                                    }}
-                                    dependentAxis
-                                />
-                                <VictoryAxis
-                                    label='Date'
-                                    style={{
-                                        axis: { stroke: 'black' },
-                                        axisLabel: { fontSize: 16, fill: 'black' },
-                                        ticks: { stroke: 'none' },
-                                        tickLabels: { fill: 'none' },
-                                    }}
-                                />
-                                <VictoryBar
-                                    data={ordersByDateData}
-                                    x='x'
-                                    y='y'
-                                    style={{
-                                        data: { fill: '#96588a' }
-                                    }}
-                                    barRatio={1}
-                                    horizontal={false}
-                                />
-                            </VictoryChart>
-                            <VictoryChart
-                                domainPadding={10}
-                                padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
-                            >
-                                <VictoryAxis
-                                    label='Items'
-                                    axisLabelComponent={<VictoryLabel dy={-15} />}
-                                    style={{
-                                        axis: { stroke: 'black' },
-                                        axisLabel: { fontSize: 16, fill: 'black' },
-                                        ticks: { stroke: 'black' },
-                                        tickLabels: {
-                                            fontSize: 12, fill: 'black'
-                                            , angle: -45
-                                        },
-                                        grid: { stroke: 'gray', strokeWidth: 0.25 }
-                                    }}
-                                    dependentAxis
-                                />
-                                <VictoryAxis
-                                    label='Date'
-                                    style={{
-                                        axis: { stroke: 'black' },
-                                        axisLabel: { fontSize: 16, fill: 'black' },
-                                        ticks: { stroke: 'none' },
-                                        tickLabels: { fill: 'none' },
-                                    }}
-                                />
-                                <VictoryBar
-                                    data={itemsByDateData}
-                                    x='x'
-                                    y='y'
-                                    style={{
-                                        data: { fill: '#96588a' }
-                                    }}
-                                    barRatio={1}
-                                    horizontal={false}
-                                />
-                            </VictoryChart>
-                            <VictoryChart
-                                domainPadding={10}
-                                padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
-                            >
-                                <VictoryAxis
-                                    label='Customers'
-                                    axisLabelComponent={<VictoryLabel dy={-15} />}
-                                    style={{
-                                        axis: { stroke: 'black' },
-                                        axisLabel: { fontSize: 16, fill: 'black' },
-                                        ticks: { stroke: 'black' },
-                                        tickLabels: {
-                                            fontSize: 12, fill: 'black'
-                                            , angle: -45
-                                        },
-                                        grid: { stroke: 'gray', strokeWidth: 0.25 }
-                                    }}
-                                    dependentAxis
-                                />
-                                <VictoryAxis
-                                    label='Date'
-                                    style={{
-                                        axis: { stroke: 'black' },
-                                        axisLabel: { fontSize: 16, fill: 'black' },
-                                        ticks: { stroke: 'none' },
-                                        tickLabels: { fill: 'none' },
-                                    }}
-                                />
-                                <VictoryBar
-                                    data={customersByDateData}
-                                    x='x'
-                                    y='y'
-                                    style={{
-                                        data: { fill: '#96588a' }
-                                    }}
-                                    barRatio={1}
-                                    horizontal={false}
-                                />
-                            </VictoryChart>
+                            <View style={styles.graphsView}>
+                                <VictoryChart
+                                    domainPadding={10}
+                                    padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
+                                >
+                                    <VictoryAxis
+                                        label='Sales'
+                                        axisLabelComponent={<VictoryLabel dy={-15} />}
+                                        style={{
+                                            axis: { stroke: 'black' },
+                                            axisLabel: { fontSize: 16, fill: 'black' },
+                                            ticks: { stroke: 'black' },
+                                            tickLabels: {
+                                                fontSize: 12, fill: 'black'
+                                                , angle: -45
+                                            },
+                                            grid: { stroke: 'gray', strokeWidth: 0.25 }
+                                        }}
+                                        dependentAxis
+                                    />
+                                    <VictoryAxis
+                                        label='Date'
+                                        style={{
+                                            axis: { stroke: 'black' },
+                                            axisLabel: { fontSize: 16, fill: 'black' },
+                                            ticks: { stroke: 'none' },
+                                            tickLabels: { fill: 'none' },
+                                        }}
+                                    />
+                                    <VictoryBar
+                                        data={salesByDateData}
+                                        x='x'
+                                        y='y'
+                                        style={{
+                                            data: { fill: '#96588a' }
+                                        }}
+                                        barRatio={1}
+                                        horizontal={false}
+                                    />
+                                </VictoryChart>
+                            </View>
+                            <View style={styles.graphsView}>
+                                <VictoryChart
+                                    domainPadding={10}
+                                    padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
+                                >
+                                    <VictoryAxis
+                                        label='Orders'
+                                        axisLabelComponent={<VictoryLabel dy={-15} />}
+                                        style={{
+                                            axis: { stroke: 'black' },
+                                            axisLabel: { fontSize: 16, fill: 'black' },
+                                            ticks: { stroke: 'black' },
+                                            tickLabels: {
+                                                fontSize: 12, fill: 'black'
+                                                , angle: -45
+                                            },
+                                            grid: { stroke: 'gray', strokeWidth: 0.25 }
+                                        }}
+                                        dependentAxis
+                                    />
+                                    <VictoryAxis
+                                        label='Date'
+                                        style={{
+                                            axis: { stroke: 'black' },
+                                            axisLabel: { fontSize: 16, fill: 'black' },
+                                            ticks: { stroke: 'none' },
+                                            tickLabels: { fill: 'none' },
+                                        }}
+                                    />
+                                    <VictoryBar
+                                        data={ordersByDateData}
+                                        x='x'
+                                        y='y'
+                                        style={{
+                                            data: { fill: '#96588a' }
+                                        }}
+                                        barRatio={1}
+                                        horizontal={false}
+                                    />
+                                </VictoryChart>
+                            </View>
+                            <View style={styles.graphsView}>
+                                <VictoryChart
+                                    domainPadding={10}
+                                    padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
+                                >
+                                    <VictoryAxis
+                                        label='Items'
+                                        axisLabelComponent={<VictoryLabel dy={-15} />}
+                                        style={{
+                                            axis: { stroke: 'black' },
+                                            axisLabel: { fontSize: 16, fill: 'black' },
+                                            ticks: { stroke: 'black' },
+                                            tickLabels: {
+                                                fontSize: 12, fill: 'black'
+                                                , angle: -45
+                                            },
+                                            grid: { stroke: 'gray', strokeWidth: 0.25 }
+                                        }}
+                                        dependentAxis
+                                    />
+                                    <VictoryAxis
+                                        label='Date'
+                                        style={{
+                                            axis: { stroke: 'black' },
+                                            axisLabel: { fontSize: 16, fill: 'black' },
+                                            ticks: { stroke: 'none' },
+                                            tickLabels: { fill: 'none' },
+                                        }}
+                                    />
+                                    <VictoryBar
+                                        data={itemsByDateData}
+                                        x='x'
+                                        y='y'
+                                        style={{
+                                            data: { fill: '#96588a' }
+                                        }}
+                                        barRatio={1}
+                                        horizontal={false}
+                                    />
+                                </VictoryChart>
+                            </View>
+                            <View style={styles.graphsView}>
+                                <VictoryChart
+                                    domainPadding={10}
+                                    padding={{ left: 60, bottom: 50, right: 50, top: 20 }}
+                                >
+                                    <VictoryAxis
+                                        label='Customers'
+                                        axisLabelComponent={<VictoryLabel dy={-15} />}
+                                        style={{
+                                            axis: { stroke: 'black' },
+                                            axisLabel: { fontSize: 16, fill: 'black' },
+                                            ticks: { stroke: 'black' },
+                                            tickLabels: {
+                                                fontSize: 12, fill: 'black'
+                                                , angle: -45
+                                            },
+                                            grid: { stroke: 'gray', strokeWidth: 0.25 }
+                                        }}
+                                        dependentAxis
+                                    />
+                                    <VictoryAxis
+                                        label='Date'
+                                        style={{
+                                            axis: { stroke: 'black' },
+                                            axisLabel: { fontSize: 16, fill: 'black' },
+                                            ticks: { stroke: 'none' },
+                                            tickLabels: { fill: 'none' },
+                                        }}
+                                    />
+                                    <VictoryBar
+                                        data={customersByDateData}
+                                        x='x'
+                                        y='y'
+                                        style={{
+                                            data: { fill: '#96588a' }
+                                        }}
+                                        barRatio={1}
+                                        horizontal={false}
+                                    />
+                                </VictoryChart>
+                            </View>
                         </>
                         : <View style={{
                             flex: -1, justifyContent: "center",
@@ -566,43 +572,45 @@ export default class Reports extends Component {
             <View style={styles.section}>
                 <Text style={styles.titleText}>All Time Total Orders by Status</Text>
                 {this.state.isOrdersTotalsReportDataReady
-                    ? <VictoryChart
-                        domainPadding={10}
-                        padding={{ left: 40, bottom: 90, right: 50, top: 20 }}
-                    >
-                        <VictoryAxis
-                            style={{
-                                axis: { stroke: 'black' },
-                                axisLabel: { fontSize: 16, fill: 'black' },
-                                ticks: { stroke: 'black' },
-                                tickLabels: { fontSize: 12, fill: 'black' },
-                                grid: { stroke: 'gray', strokeWidth: 0.25 }
-                            }} dependentAxis
-                        />
-                        <VictoryAxis
-                            style={{
-                                axis: { stroke: 'black' },
-                                axisLabel: { fontSize: 16, fill: 'black' },
-                                ticks: { stroke: 'black' },
-                                tickLabels: {
-                                    fontSize: 12, fill: 'black', verticalAnchor: 'middle',
-                                    textAnchor: 'start', angle: 45
-                                }
-                            }}
-                        />
-                        <VictoryBar
-                            data={this.state.ordersTotalsReportData}
-                            x='name'
-                            y='total'
-                            labels={({ datum }) => datum._y}
-                            style={{
-                                data: { fill: '#96588a' },
-                                labels: { fill: 'black' }
-                            }}
-                            barRatio={1}
-                            horizontal={false}
-                        />
-                    </VictoryChart>
+                    ? <View style={styles.graphsView}>
+                        <VictoryChart
+                            domainPadding={10}
+                            padding={{ left: 40, bottom: 90, right: 50, top: 20 }}
+                        >
+                            <VictoryAxis
+                                style={{
+                                    axis: { stroke: 'black' },
+                                    axisLabel: { fontSize: 16, fill: 'black' },
+                                    ticks: { stroke: 'black' },
+                                    tickLabels: { fontSize: 12, fill: 'black' },
+                                    grid: { stroke: 'gray', strokeWidth: 0.25 }
+                                }} dependentAxis
+                            />
+                            <VictoryAxis
+                                style={{
+                                    axis: { stroke: 'black' },
+                                    axisLabel: { fontSize: 16, fill: 'black' },
+                                    ticks: { stroke: 'black' },
+                                    tickLabels: {
+                                        fontSize: 12, fill: 'black', verticalAnchor: 'middle',
+                                        textAnchor: 'start', angle: 45
+                                    }
+                                }}
+                            />
+                            <VictoryBar
+                                data={this.state.ordersTotalsReportData}
+                                x='name'
+                                y='total'
+                                labels={({ datum }) => datum._y}
+                                style={{
+                                    data: { fill: '#96588a' },
+                                    labels: { fill: 'black' }
+                                }}
+                                barRatio={1}
+                                horizontal={false}
+                            />
+                        </VictoryChart>
+                    </View>
                     : <View style={{
                         flex: -1, justifyContent: "center",
                         alignContent: "center", padding: 20
@@ -629,13 +637,15 @@ export default class Reports extends Component {
             <View style={styles.section}>
                 <Text style={styles.titleText}>All Time Total Customers Report</Text>
                 {this.state.isCustomersTotalsReportDataReady
-                    ? <VictoryPie
-                        data={this.state.customersTotalsReportData}
-                        x='name'
-                        y='total'
-                        colorScale={['#96588a', '#CBACC5']}
-                        labels={({ datum }) => `${datum.name} ${datum._y}`}
-                    />
+                    ? <View style={styles.graphsView}>
+                        <VictoryPie
+                            data={this.state.customersTotalsReportData}
+                            x='name'
+                            y='total'
+                            colorScale={['#96588a', '#CBACC5']}
+                            labels={({ datum }) => `${datum.name} ${datum._y}`}
+                        />
+                    </View>
                     : <View style={{
                         flex: -1, justifyContent: "center",
                         alignContent: "center", padding: 20
@@ -730,4 +740,11 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
+    graphsView: {
+        flex: -1,
+        flexDirection: 'row',
+        marginLeft: 15,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
 });
