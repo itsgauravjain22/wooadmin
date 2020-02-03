@@ -68,34 +68,32 @@ export default class ProductsList extends Component {
             url = `${base_url}/wp-json/wc/v3/products?per_page=20&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`;
         }
         this.setState({ loading: true });
-        setTimeout(() => {
-            fetch(url).then((response) => response.json())
-                .then((responseJson) => {
-                    if (Array.isArray(responseJson) && responseJson.length) {
-                        this.setState({
-                            hasMoreToLoad: true,
-                            data: this.state.data.concat(responseJson),
-                            error: responseJson.code || null,
-                            loading: false,
-                            refreshing: false
-                        });
-                    } else {
-                        this.setState({
-                            hasMoreToLoad: false,
-                            error: responseJson.code || null,
-                            loading: false,
-                            refreshing: false
-                        });
-                    }
-                }).catch((error) => {
+        fetch(url).then((response) => response.json())
+            .then((responseJson) => {
+                if (Array.isArray(responseJson) && responseJson.length) {
                     this.setState({
-                        hasMoreToLoad: false,
-                        error,
+                        hasMoreToLoad: true,
+                        data: this.state.data.concat(responseJson),
+                        error: responseJson.code || null,
                         loading: false,
                         refreshing: false
-                    })
-                });
-        }, 1500);
+                    });
+                } else {
+                    this.setState({
+                        hasMoreToLoad: false,
+                        error: responseJson.code || null,
+                        loading: false,
+                        refreshing: false
+                    });
+                }
+            }).catch((error) => {
+                this.setState({
+                    hasMoreToLoad: false,
+                    error,
+                    loading: false,
+                    refreshing: false
+                })
+            });
     };
 
     renderListSeparator = () => {

@@ -96,7 +96,7 @@ export default class OrderDetails extends Component {
                     orderStatusOptions: [...orderStatusMap],
                     orderStatusValue: this.state.orderData.status,
                     loading: false,
-                }, this.fetchOrderProductImages())
+                }, this.fetchOrderProductImages)
             })
     }
 

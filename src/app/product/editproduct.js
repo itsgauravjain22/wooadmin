@@ -4,18 +4,36 @@ import {
     ScrollView, ActivityIndicator, TextInput, Picker, ToastAndroid
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import MultiSelect from 'react-native-multiple-select';
 import GLOBAL from './productglobal'
 
 export default class EditProduct extends Component {
+
+    static navigationOptions = ({ navigation }) => {
+        return {
+            title: 'Edit Product',
+        };
+    };
+
     constructor(props) {
         super(props);
         productData = this.props.navigation.getParam('productData');
         base_url = this.props.navigation.getParam('base_url');
         c_key = this.props.navigation.getParam('c_key');
         c_secret = this.props.navigation.getParam('c_secret');
+        let selectedProductCategories = []
+        productData.categories.forEach(item => {
+            if (item.id) {
+                selectedProductCategories.push(item.id.toString())
+            }
+        })
         this.state = {
             loading: false,
             error: null,
+            productCategoriesPage: 1,
+            hasMoreProductCategoriesToLoad: true,
+            productCategories: [],
+            selectedProductCategories: selectedProductCategories,
             name: productData.name,
             sku: productData.sku,
             status: productData.status,
@@ -38,11 +56,9 @@ export default class EditProduct extends Component {
         };
     }
 
-    static navigationOptions = ({ navigation }) => {
-        return {
-            title: 'Edit Product',
-        };
-    };
+    componentDidMount() {
+        this.fetchAllProductCategories()
+    }
 
     render() {
         if (this.state.loading) {
@@ -58,24 +74,50 @@ export default class EditProduct extends Component {
                 <ScrollView>
                     {this.displayProductNameSection()}
                     {this.displayProductStatusSection()}
+                    {this.displayProductCategoriesSection()}
                     {this.displayProductPricingSection()}
                     {this.displayProductInventorySection()}
                     {this.displayProductShippingSection()}
-                    {this.displayProductTypeSection()}
+                    {/* {this.displayProductTypeSection()} */}
                 </ScrollView>
-                <TouchableOpacity
-                    style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        height: 50,
-                        backgroundColor: '#96588a'
-                    }}
-                    onPress={this.handleSubmit}
-                >
-                    <Text style={{ color: 'white' }}>Submit</Text>
-                </TouchableOpacity>
+                {this.displaySubmitButton()}
             </KeyboardAvoidingView>
         );
+    }
+
+    //Fetch Functions Below
+
+    fetchAllProductCategories = () => {
+        const url = `${base_url}/wp-json/wc/v3/products/categories?per_page=20&page=${this.state.productCategoriesPage}&consumer_key=${c_key}&consumer_secret=${c_secret}`;
+        this.setState({ loading: true });
+        fetch(url).then((response) => response.json())
+            .then((responseJson) => {
+                if (Array.isArray(responseJson) && responseJson.length > 0 && 'id' in responseJson[0]) {
+                    responseJson.forEach((item, index) => {
+                        responseJson[index].id = item.id.toString()
+                    })
+                    this.setState({
+                        hasMoreProductCategoriesToLoad: true,
+                        productCategoriesPage: this.state.productCategoriesPage + 1,
+                        productCategories: this.state.productCategories.concat(responseJson),
+                    }, this.fetchAllProductCategories);
+                } else if (Array.isArray(responseJson) && responseJson.length === 0) {
+                    this.setState({
+                        hasMoreProductCategoriesToLoad: false,
+                        loading: false
+                    })
+                } else if ('code' in responseJson) {
+                    this.setState({
+                        error: responseJson.code,
+                        loading: false
+                    })
+                }
+            }).catch((error) => {
+                this.setState({
+                    error,
+                    loading: false
+                })
+            });
     }
 
     //Display Functions Below
@@ -89,7 +131,11 @@ export default class EditProduct extends Component {
                         borderColor: 'gray',
                         borderBottomWidth: 1
                     }}
-                    onChangeText={this.handlleProductName}
+                    onChangeText={text => {
+                        this.setState({
+                            name: text.toString()
+                        })
+                    }}
                     value={this.state.name}
                 />
             </View >
@@ -108,7 +154,11 @@ export default class EditProduct extends Component {
                         <Picker
                             mode='dropdown'
                             selectedValue={this.state.status}
-                            onValueChange={this.handleStatus}
+                            onValueChange={text => {
+                                this.setState({
+                                    status: text.toString()
+                                })
+                            }}
                         >
                             <Picker.Item label="Publish" value="publish" />
                             <Picker.Item label="Draft" value="draft" />
@@ -134,7 +184,11 @@ export default class EditProduct extends Component {
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
                             value={this.state.regularPrice}
-                            onChangeText={this.handleRegularPrice}
+                            onChangeText={(value) => {
+                                if (!isNaN(value)) {
+                                    this.setState({ regularPrice: value });
+                                }
+                            }}
                         />
                     </View>
                 </View>
@@ -147,7 +201,11 @@ export default class EditProduct extends Component {
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
                             value={this.state.salePrice}
-                            onChangeText={this.handleSalePrice}
+                            onChangeText={(value) => {
+                                if (!isNaN(value)) {
+                                    this.setState({ salePrice: value });
+                                }
+                            }}
                         />
                     </View>
                 </View>
@@ -158,13 +216,23 @@ export default class EditProduct extends Component {
                         <Text>Sale Date From: </Text>
                     </View>
                     <View style={{ flex: 2 }}>
-                        <TouchableOpacity onPress={this.handleShowDateOnSaleFrom}>
+                        <TouchableOpacity onPress={() => {
+                            this.setState({
+                                showDateOnSaleFrom: true
+                            })
+                        }}>
                             <Text>{this.state.dateOnSaleFrom ? new Date(this.state.dateOnSaleFrom).toDateString() : 'Select Date'}</Text>
                         </TouchableOpacity>
                         {this.state.showDateOnSaleFrom && <DateTimePicker
                             value={this.state.dateOnSaleFrom ? new Date(this.state.dateOnSaleFrom) : new Date()}
                             mode='date'
-                            onChange={this.handleDateOnSaleFrom}
+                            onChange={(event, date) => {
+                                date = date ? date.toISOString() : "";
+                                this.setState({
+                                    showDateOnSaleFrom: false,
+                                    dateOnSaleFrom: date,
+                                })
+                            }}
                         />}
                     </View>
                 </View>
@@ -175,13 +243,23 @@ export default class EditProduct extends Component {
                         <Text>Sale Date To: </Text>
                     </View>
                     <View style={{ flex: 2 }}>
-                        <TouchableOpacity onPress={this.handleShowDateOnSaleTo}>
+                        <TouchableOpacity onPress={() => {
+                            this.setState({
+                                showDateOnSaleTo: true
+                            })
+                        }}>
                             <Text>{this.state.dateOnSaleTo ? new Date(this.state.dateOnSaleTo).toDateString() : 'Select Date'}</Text>
                         </TouchableOpacity>
                         {this.state.showDateOnSaleTo && <DateTimePicker
                             value={this.state.dateOnSaleTo ? new Date(this.state.dateOnSaleTo) : new Date()}
                             mode='date'
-                            onChange={this.handleDateOnSaleTo}
+                            onChange={(event, date) => {
+                                date = date ? date.toISOString() : "";
+                                this.setState({
+                                    showDateOnSaleTo: false,
+                                    dateOnSaleTo: date,
+                                })
+                            }}
                         />}
                     </View>
                 </View>
@@ -195,6 +273,24 @@ export default class EditProduct extends Component {
                 <Text style={styles.titleText}>Inventory</Text>
                 <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
                     <View style={{ flex: 2 }}>
+                        <Text>Stock Status: </Text>
+                    </View>
+                    <View style={{ flex: 2 }}>
+                        <Picker
+                            mode='dropdown'
+                            selectedValue={this.state.stock_status}
+                            onValueChange={(value) => {
+                                this.setState({ stockStatus: value.toString() })
+                            }}
+                        >
+                            <Picker.Item label="In Stock" value="instock" />
+                            <Picker.Item label="Out of Stock" value="outofstock" />
+                            <Picker.Item label="On Backorder" value="onbackorder" />
+                        </Picker>
+                    </View>
+                </View>
+                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
+                    <View style={{ flex: 2 }}>
                         <Text>Manage Stock: </Text>
                     </View>
                     <View style={{ flex: 2 }}>
@@ -202,24 +298,10 @@ export default class EditProduct extends Component {
                             thumbColor={'#96588a'}
                             trackColor={{ true: '#D5BCD0' }}
                             value={this.state.manageStock}
-                            onValueChange={this.handleManageStock}
+                            onValueChange={(value) => {
+                                this.setState({ manageStock: value })
+                            }}
                         />
-                    </View>
-                </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
-                        <Text>Stock Status: </Text>
-                    </View>
-                    <View style={{ flex: 2 }}>
-                        <Picker
-                            mode='dropdown'
-                            selectedValue={this.state.stock_status}
-                            onValueChange={this.handleStockStatus}
-                        >
-                            <Picker.Item label="In Stock" value="instock" />
-                            <Picker.Item label="Out of Stock" value="outofstock" />
-                            <Picker.Item label="On Backorder" value="onbackorder" />
-                        </Picker>
                     </View>
                 </View>
                 <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
@@ -231,10 +313,70 @@ export default class EditProduct extends Component {
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
                             value={this.state.stockQuantity ? this.state.stockQuantity.toString() : null}
-                            onChangeText={this.handleStockQuantity}
+                            onChangeText={(value) => {
+                                if (!isNaN(value)) {
+                                    this.setState({ stockQuantity: parseInt(value) });
+                                }
+                            }}
                         />
                     </View>
                 </View>
+            </View>
+        )
+    }
+
+    displayProductCategoriesSection = () => {
+        return (
+            <View style={styles.section}>
+                <Text style={styles.titleText}>Categories</Text>
+                <MultiSelect
+                    items={this.state.productCategories}
+                    uniqueKey="id"
+                    displayKey="name"
+                    onSelectedItemsChange={selectedItems => this.setState({
+                        selectedProductCategories: selectedItems
+                    })}
+                    fixedHeight={false}
+                    hideTags
+                    ref={(component) => { this.multiSelect = component }}
+                    selectedItems={this.state.selectedProductCategories}
+                    selectText="Pick Categories"
+                    searchInputPlaceholderText="Search Category..."
+                    searchInputStyle={{ height: 40, color: 'black' }}
+                    itemTextColor='black'
+                    selectedItemTextColor='#96588a'
+                    selectedItemIconColor='#96588a'
+                    submitButtonColor='#96588a'
+                    submitButtonText='Update Categories'
+                />
+            </View>
+        )
+    }
+
+    displayProductCategoriesSection = () => {
+        return (
+            <View style={styles.section}>
+                <Text style={styles.titleText}>Categories</Text>
+                <MultiSelect
+                    items={this.state.productCategories}
+                    uniqueKey="id"
+                    displayKey="name"
+                    onSelectedItemsChange={selectedItems => this.setState({
+                        selectedProductCategories: selectedItems
+                    })}
+                    fixedHeight={false}
+                    hideTags
+                    ref={(component) => { this.multiSelect = component }}
+                    selectedItems={this.state.selectedProductCategories}
+                    selectText="Pick Categories"
+                    searchInputPlaceholderText="Search Category..."
+                    searchInputStyle={{ height: 40, color: 'black' }}
+                    itemTextColor='black'
+                    selectedItemTextColor='#96588a'
+                    selectedItemIconColor='#96588a'
+                    submitButtonColor='#96588a'
+                    submitButtonText='Update Categories'
+                />
             </View>
         )
     }
@@ -252,7 +394,11 @@ export default class EditProduct extends Component {
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
                             value={this.state.weight}
-                            onChangeText={this.handleWeight}
+                            onChangeText={(value) => {
+                                if (!isNaN(value)) {
+                                    this.setState({ weight: value })
+                                }
+                            }}
                         />
                     </View>
                 </View>
@@ -265,7 +411,11 @@ export default class EditProduct extends Component {
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
                             value={this.state.length}
-                            onChangeText={this.handleLength}
+                            onChangeText={(value) => {
+                                if (!isNaN(value)) {
+                                    this.setState({ length: value })
+                                }
+                            }}
                         />
                     </View>
                 </View>
@@ -278,7 +428,11 @@ export default class EditProduct extends Component {
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
                             value={this.state.width}
-                            onChangeText={this.handleWidth}
+                            onChangeText={(value) => {
+                                if (!isNaN(value)) {
+                                    this.setState({ width: value })
+                                }
+                            }}
                         />
                     </View>
                 </View>
@@ -291,7 +445,11 @@ export default class EditProduct extends Component {
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
                             value={this.state.height}
-                            onChangeText={this.handleHeight}
+                            onChangeText={(value) => {
+                                if (!isNaN(value)) {
+                                    this.setState({ height: value })
+                                }
+                            }}
                         />
                     </View>
                 </View>
@@ -310,7 +468,9 @@ export default class EditProduct extends Component {
                     <View style={{ flex: 2 }}>
                         <Picker mode='dropdown'
                             selectedValue={this.state.type}
-                            onValueChange={this.handleType}
+                            onValueChange={(value) => {
+                                this.setState({ type: value.toString() })
+                            }}
                         >
                             <Picker.Item label="Simple" value="simple" />
                         </Picker>
@@ -325,7 +485,9 @@ export default class EditProduct extends Component {
                             thumbColor={'#96588a'}
                             trackColor={{ true: '#D5BCD0' }}
                             value={this.state.virtual}
-                            onValueChange={this.handleVirtual}
+                            onValueChange={(value) => {
+                                this.setState({ virtual: value })
+                            }}
                         />
                     </View>
                 </View>
@@ -338,7 +500,9 @@ export default class EditProduct extends Component {
                             thumbColor={'#96588a'}
                             trackColor={{ true: '#D5BCD0' }}
                             value={this.state.downloadable}
-                            onValueChange={this.handleDownloadable}
+                            onValueChange={(value) => {
+                                this.setState({ downloadable: value })
+                            }}
                         />
                     </View>
                 </View>
@@ -346,107 +510,33 @@ export default class EditProduct extends Component {
         )
     }
 
+    displaySubmitButton = () => {
+        return (
+            <TouchableOpacity
+                style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 50,
+                    backgroundColor: '#96588a'
+                }}
+                onPress={this.handleSubmit}
+            >
+                <Text style={{ color: 'white' }}>Submit</Text>
+            </TouchableOpacity>
+        )
+    }
+
     //Handle Functions Below
 
-    handlleProductName = (text) => {
-        this.setState({ name: text.toString() });
-    }
-
-    handleStatus = (text) => {
-        this.setState({ status: text.toString() });
-    }
-
-    handleRegularPrice = (value) => {
-        if (!isNaN(value)) {
-            this.setState({ regularPrice: value });
-        }
-    }
-
-    handleSalePrice = (value) => {
-        if (!isNaN(value)) {
-            this.setState({ salePrice: value });
-        }
-    }
-
-    handleShowDateOnSaleFrom = () => {
-        this.setState({
-            showDateOnSaleFrom: true
-        })
-    }
-
-    handleDateOnSaleFrom = (event, date) => {
-        date = date ? date.toISOString() : "";
-        this.setState({
-            showDateOnSaleFrom: false,
-            dateOnSaleFrom: date,
-        })
-    }
-
-    handleShowDateOnSaleTo = () => {
-        this.setState({
-            showDateOnSaleTo: true
-        })
-    }
-
-    handleDateOnSaleTo = (event, date) => {
-        date = date ? date.toISOString() : "";
-        this.setState({
-            showDateOnSaleTo: false,
-            dateOnSaleTo: date,
-        })
-    }
-
-    handleManageStock = (value) => {
-        this.setState({ manageStock: value })
-    }
-
-    handleStockStatus = (value) => {
-        this.setState({ stockStatus: value.toString() })
-    }
-
-    handleStockQuantity = (value) => {
-        if (!isNaN(value)) {
-            this.setState({ stockQuantity: parseInt(value) });
-        }
-    }
-
-    handleWeight = (value) => {
-        if (!isNaN(value)) {
-            this.setState({ weight: value })
-        }
-    }
-
-    handleLength = (value) => {
-        if (!isNaN(value)) {
-            this.setState({ length: value })
-        }
-    }
-
-    handleWidth = (value) => {
-        if (!isNaN(value)) {
-            this.setState({ width: value })
-        }
-    }
-
-    handleHeight = (value) => {
-        if (!isNaN(value)) {
-            this.setState({ height: value })
-        }
-    }
-
-    handleType = (value) => {
-        this.setState({ type: value.toString() })
-    }
-
-    handleVirtual = (value) => {
-        this.setState({ virtual: value })
-    }
-
-    handleDownloadable = (value) => {
-        this.setState({ downloadable: value })
-    }
-
     handleSubmit = () => {
+        let updatedProductCategoriesArray = []
+        this.state.selectedProductCategories.forEach(id => {
+            if (!isNaN(id)) {
+                updatedProductCategoriesArray.push({
+                    "id": parseInt(id)
+                })
+            }
+        })
         let updatedProductObject = {
             "name": this.state.name,
             "sku": this.state.sku,
@@ -463,6 +553,7 @@ export default class EditProduct extends Component {
             "type": this.state.type,
             "virtual": this.state.virtual,
             "downloadable": this.state.downloadable,
+            "categories": updatedProductCategoriesArray
         };
 
         const productId = productData.id;
