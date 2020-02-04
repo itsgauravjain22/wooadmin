@@ -143,7 +143,7 @@ export default class OrderDetails extends Component {
             itemArray.push(
                 <View key={item.id} style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white' }}>
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                        <Image source={'primary_image_src' in item?{uri: item.primary_image_src}:null}
+                        <Image source={'primary_image_src' in item ? { uri: item.primary_image_src } : null}
                             style={{ height: 100, width: 100 }} resizeMode='contain' />
                     </View>
                     <View style={{ flex: 2, marginTop: 10, marginBottom: 10, justifyContent: "center" }}>
@@ -170,7 +170,28 @@ export default class OrderDetails extends Component {
     }
 
     getCurrencySymbol = () => {
-        return (this.state.orderData.currency_symbol) ? this.state.orderData.currency_symbol : this.state.orderData.currency;
+        return (this.state.orderData.currency_symbol)
+            ? this.state.orderData.currency_symbol
+            : this.state.orderData.currency;
+    }
+
+    //Get optionally TM Product Options Fees Total
+    getTMProductOptionsFees = () => {
+        let tmProductOptionsFees = [];
+        if ('fee_lines' in this.state.orderData && Array.isArray(this.state.orderData.fee_lines)
+            && this.state.orderData.fee_lines.length > 0) {
+            this.state.orderData.fee_lines.forEach(item => {
+                if ('id' in item && 'name' in item && 'total' in item)
+                    tmProductOptionsFees.push(
+                        <Text key={`fee_lines_${item.id}`}>{item.name}: {item.total}</Text>
+                    )
+            })
+        }
+        return (
+            <View>
+                {tmProductOptionsFees}
+            </View>
+        )
     }
 
     //Get optionally TM Product Options
@@ -321,11 +342,12 @@ export default class OrderDetails extends Component {
         return (
             <View style={styles.section}>
                 <Text style={styles.titleText}>Payment</Text>
+                <Text>Payment Gateway: {this.state.orderData.payment_method_title}</Text>
                 <Text style={{ fontWeight: 'bold' }}>Order Total: {this.getCurrencySymbol()}{this.state.orderData.total}</Text>
                 <Text>Product Total: {this.getCurrencySymbol()}{this.getProductTotal()}</Text>
                 <Text>Shipping:{this.getCurrencySymbol()}{this.state.orderData.shipping_total}</Text>
                 <Text>Taxes: {this.getCurrencySymbol()}{this.state.orderData.total_tax}</Text>
-                <Text>Payment Gateway: {this.state.orderData.payment_method_title}</Text>
+                {this.getTMProductOptionsFees()}
             </View>
         )
     }
