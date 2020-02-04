@@ -70,7 +70,7 @@ export default class EditProduct extends Component {
         }
 
         return (
-            <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled>
+            <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior='padding' enabled>
                 <ScrollView>
                     {this.displayProductNameSection()}
                     {this.displayProductStatusSection()}
@@ -126,18 +126,19 @@ export default class EditProduct extends Component {
         return (
             < View style={styles.section} >
                 <Text style={styles.titleText}>Product Name</Text>
-                <TextInput
-                    style={{
-                        borderColor: 'gray',
-                        borderBottomWidth: 1
-                    }}
-                    onChangeText={text => {
-                        this.setState({
-                            name: text.toString()
-                        })
-                    }}
-                    value={this.state.name}
-                />
+                    <TextInput
+                        style={{
+                            borderColor: 'gray',
+                            borderBottomWidth: 1
+                        }}
+                        textAlign='center'
+                        onChangeText={text => {
+                            this.setState({
+                                name: text.toString()
+                            })
+                        }}
+                        value={this.state.name}
+                    />
             </View >
         )
     }
@@ -146,11 +147,11 @@ export default class EditProduct extends Component {
         return (
             <View style={styles.section}>
                 <Text style={styles.titleText}>Status</Text>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Status: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <Picker
                             mode='dropdown'
                             selectedValue={this.state.status}
@@ -171,18 +172,49 @@ export default class EditProduct extends Component {
         )
     }
 
+    displayProductCategoriesSection = () => {
+        return (
+            <View style={styles.section}>
+                <Text style={styles.titleText}>Categories</Text>
+                <View style={{marginLeft: 10, marginRight: 10}}>
+                    <MultiSelect
+                        items={this.state.productCategories}
+                        uniqueKey="id"
+                        displayKey="name"
+                        onSelectedItemsChange={selectedItems => this.setState({
+                            selectedProductCategories: selectedItems
+                        })}
+                        fixedHeight={false}
+                        hideTags
+                        ref={(component) => { this.multiSelect = component }}
+                        selectedItems={this.state.selectedProductCategories}
+                        selectText="Pick Categories"
+                        searchInputPlaceholderText="Search Category..."
+                        searchInputStyle={{ height: 40, color: 'black' }}
+                        itemTextColor='black'
+                        selectedItemTextColor='#96588a'
+                        selectedItemIconColor='#96588a'
+                        submitButtonColor='#96588a'
+                        submitButtonText='Update Categories'
+                    />
+                </View>
+            </View>
+        )
+    }
+
     displayProductPricingSection = () => {
         return (
             <View style={styles.section}>
                 <Text style={styles.titleText}>Pricing</Text>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Regular Price: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <TextInput
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
+                            textAlign='center'
                             value={this.state.regularPrice}
                             onChangeText={(value) => {
                                 if (!isNaN(value)) {
@@ -192,15 +224,16 @@ export default class EditProduct extends Component {
                         />
                     </View>
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Sale Price: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <TextInput
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
                             value={this.state.salePrice}
+                            textAlign='center'
                             onChangeText={(value) => {
                                 if (!isNaN(value)) {
                                     this.setState({ salePrice: value });
@@ -209,18 +242,18 @@ export default class EditProduct extends Component {
                         />
                     </View>
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{
-                        flex: 2
-                    }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Sale Date From: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
-                        <TouchableOpacity onPress={() => {
-                            this.setState({
-                                showDateOnSaleFrom: true
-                            })
-                        }}>
+                    <View style={styles.sectionRowRightCol}>
+                        <TouchableOpacity
+                            style={{ justifyContent: 'center', alignItems: 'center' }}
+                            onPress={() => {
+                                this.setState({
+                                    showDateOnSaleFrom: true
+                                })
+                            }}>
                             <Text>{this.state.dateOnSaleFrom ? new Date(this.state.dateOnSaleFrom).toDateString() : 'Select Date'}</Text>
                         </TouchableOpacity>
                         {this.state.showDateOnSaleFrom && <DateTimePicker
@@ -236,18 +269,18 @@ export default class EditProduct extends Component {
                         />}
                     </View>
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{
-                        flex: 2
-                    }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Sale Date To: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
-                        <TouchableOpacity onPress={() => {
-                            this.setState({
-                                showDateOnSaleTo: true
-                            })
-                        }}>
+                    <View style={styles.sectionRowRightCol}>
+                        <TouchableOpacity
+                            style={{ justifyContent: 'center', alignItems: 'center' }}
+                            onPress={() => {
+                                this.setState({
+                                    showDateOnSaleTo: true
+                                })
+                            }}>
                             <Text>{this.state.dateOnSaleTo ? new Date(this.state.dateOnSaleTo).toDateString() : 'Select Date'}</Text>
                         </TouchableOpacity>
                         {this.state.showDateOnSaleTo && <DateTimePicker
@@ -271,11 +304,11 @@ export default class EditProduct extends Component {
         return (
             <View style={styles.section}>
                 <Text style={styles.titleText}>Inventory</Text>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Stock Status: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <Picker
                             mode='dropdown'
                             selectedValue={this.state.stock_status}
@@ -289,11 +322,11 @@ export default class EditProduct extends Component {
                         </Picker>
                     </View>
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Manage Stock: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={[styles.sectionRowRightCol, {alignItems: 'center'}]}>
                         <Switch
                             thumbColor={'#96588a'}
                             trackColor={{ true: '#D5BCD0' }}
@@ -304,14 +337,15 @@ export default class EditProduct extends Component {
                         />
                     </View>
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Stock Quantity: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <TextInput
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
+                            textAlign='center'
                             value={this.state.stockQuantity ? this.state.stockQuantity.toString() : null}
                             onChangeText={(value) => {
                                 if (!isNaN(value)) {
@@ -325,73 +359,18 @@ export default class EditProduct extends Component {
         )
     }
 
-    displayProductCategoriesSection = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Categories</Text>
-                <MultiSelect
-                    items={this.state.productCategories}
-                    uniqueKey="id"
-                    displayKey="name"
-                    onSelectedItemsChange={selectedItems => this.setState({
-                        selectedProductCategories: selectedItems
-                    })}
-                    fixedHeight={false}
-                    hideTags
-                    ref={(component) => { this.multiSelect = component }}
-                    selectedItems={this.state.selectedProductCategories}
-                    selectText="Pick Categories"
-                    searchInputPlaceholderText="Search Category..."
-                    searchInputStyle={{ height: 40, color: 'black' }}
-                    itemTextColor='black'
-                    selectedItemTextColor='#96588a'
-                    selectedItemIconColor='#96588a'
-                    submitButtonColor='#96588a'
-                    submitButtonText='Update Categories'
-                />
-            </View>
-        )
-    }
-
-    displayProductCategoriesSection = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Categories</Text>
-                <MultiSelect
-                    items={this.state.productCategories}
-                    uniqueKey="id"
-                    displayKey="name"
-                    onSelectedItemsChange={selectedItems => this.setState({
-                        selectedProductCategories: selectedItems
-                    })}
-                    fixedHeight={false}
-                    hideTags
-                    ref={(component) => { this.multiSelect = component }}
-                    selectedItems={this.state.selectedProductCategories}
-                    selectText="Pick Categories"
-                    searchInputPlaceholderText="Search Category..."
-                    searchInputStyle={{ height: 40, color: 'black' }}
-                    itemTextColor='black'
-                    selectedItemTextColor='#96588a'
-                    selectedItemIconColor='#96588a'
-                    submitButtonColor='#96588a'
-                    submitButtonText='Update Categories'
-                />
-            </View>
-        )
-    }
-
     displayProductShippingSection = () => {
         return (
             <View style={styles.section}>
                 <Text style={styles.titleText}>Shipping</Text>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Weight: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <TextInput
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
+                            textAlign='center'
                             keyboardType='numeric'
                             value={this.state.weight}
                             onChangeText={(value) => {
@@ -402,14 +381,15 @@ export default class EditProduct extends Component {
                         />
                     </View>
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Length: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <TextInput
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
+                            textAlign='center'
                             value={this.state.length}
                             onChangeText={(value) => {
                                 if (!isNaN(value)) {
@@ -419,14 +399,15 @@ export default class EditProduct extends Component {
                         />
                     </View>
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Width: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <TextInput
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
+                            textAlign='center'
                             value={this.state.width}
                             onChangeText={(value) => {
                                 if (!isNaN(value)) {
@@ -436,14 +417,15 @@ export default class EditProduct extends Component {
                         />
                     </View>
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Height: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <TextInput
                             style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
                             keyboardType='numeric'
+                            textAlign='center'
                             value={this.state.height}
                             onChangeText={(value) => {
                                 if (!isNaN(value)) {
@@ -461,11 +443,11 @@ export default class EditProduct extends Component {
         return (
             <View style={styles.section}>
                 <Text style={styles.titleText}>Type</Text>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Product Type: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <Picker mode='dropdown'
                             selectedValue={this.state.type}
                             onValueChange={(value) => {
@@ -476,11 +458,11 @@ export default class EditProduct extends Component {
                         </Picker>
                     </View>
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Virtual: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <Switch
                             thumbColor={'#96588a'}
                             trackColor={{ true: '#D5BCD0' }}
@@ -491,11 +473,11 @@ export default class EditProduct extends Component {
                         />
                     </View>
                 </View>
-                <View style={{ flex: 1, marginLeft: 10, marginRight: 10, flexDirection: 'row' }}>
-                    <View style={{ flex: 2 }}>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionRowLeftCol}>
                         <Text>Downloadable: </Text>
                     </View>
-                    <View style={{ flex: 2 }}>
+                    <View style={styles.sectionRowRightCol}>
                         <Switch
                             thumbColor={'#96588a'}
                             trackColor={{ true: '#D5BCD0' }}
@@ -596,4 +578,20 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
     },
+    sectionRow: {
+        flex: 1,
+        flexDirection: 'row',
+        marginLeft: 10,
+        marginRight: 10,
+        alignItems: 'center',
+        height: 35
+    },
+    sectionRowLeftCol: {
+        flex: 2,
+        justifyContent: 'center',
+    },
+    sectionRowRightCol: {
+        flex: 2,
+        justifyContent: 'center',
+    }
 });

@@ -141,84 +141,137 @@ export default class ProductDetails extends Component {
         return (
             <View style={{ flex: 1 }}>
                 {this.state.loading ? <ActivityIndicator size='large' color='#96588a' /> :
-                    <ScrollView style={{ flex: 1 }}>
-                        <View style={{ height: 150 }}>
-                            {this.getProductImages()}
-                        </View>
-                        <View style={styles.section}>
-                            <Text style={styles.titleText}>{this.state.productData.name}</Text>
-                            <Text>Sku: {this.state.productData.sku}</Text>
-                            <Text>Slug: {this.state.productData.slug}</Text>
-                            <Text>Status: {this.state.productData.status}</Text>
-                            <Text>Total Ordered: {this.state.productData.total_sales}</Text>
-                        </View>
-                        <View style={styles.section}>
-                            <Text style={styles.titleText}>Pricing</Text>
-                            <Text>Regular Price: {this.state.productData.regular_price}</Text>
-                            <Text>Sale Price: {this.state.productData.sale_price}</Text>
-                        </View>
-                        <View style={styles.section}>
-                            <Text style={styles.titleText}>Inventory</Text>
-                            <Text>Stock Status: {this.state.productData.stock_status}</Text>
-                            <Text>Manage Stock: {this.state.productData.manage_stock ? 'true' : 'false'}</Text>
-                            <Text>Stock Qty: {this.state.productData.stock_quantity}</Text>
-                        </View>
-                        <View style={styles.section}>
-                            <Text style={styles.titleText}>Shipping</Text>
-                            <Text>Weight: {this.state.productData.weight}</Text>
-                            <Text>Size: {('dimensions' in this.state.productData) ? this.state.productData.dimensions.length : null}
-                                {('dimensions' in this.state.productData)
-                                    ? (this.state.productData.dimensions.length) ?
-                                        `x${this.state.productData.dimensions.width}`
-                                        : null
-                                    : null}
-                                {('dimensions' in this.state.productData)
-                                    ? (this.state.productData.dimensions.length)
-                                        ? `x${this.state.productData.dimensions.height}`
-                                        : null
-                                    : null}
-                            </Text>
-                        </View>
-                        <View style={styles.section}>
-                            <Text style={styles.titleText}>Categories</Text>
-                            <ScrollView horizontal={true}>{this.getProductCategories()}</ScrollView>
-                        </View>
-                        <View style={styles.section}>
-                            <Text style={styles.titleText}>Attributes</Text>
-                            <>{this.getProductAttributes()}</>
-                        </View>
-                    </ScrollView>
+                    <View style={{ flex: 1 }}>
+                        <ScrollView style={{ flex: 1 }}>
+                            {this.displayProductImages()}
+                            {this.displayProductBasicDetails()}
+                            {this.displayProductPricingDetails()}
+                            {this.displayProductInventoryDetails()}
+                            {this.displayProductShippingDetails()}
+                            {this.displayProductCategoriesDetails()}
+                            {this.displayProductAttributesDetails()}
+                        </ScrollView>
+                        {this.displayEditProductButton()}
+                    </View>
                 }
-                <TouchableOpacity
-                    style={{
-                        borderWidth: 1,
-                        borderColor: 'rgba(0,0,0,0.2)',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 60,
-                        height: 60,
-                        position: 'absolute',
-                        bottom: 15,
-                        right: 15,
-                        backgroundColor: '#fff',
-                        borderRadius: 100,
-                    }}
-                    onPress={() => {
-                        this.props.navigation.navigate('EditProduct', {
-                            productId: productId,
-                            productName: this.props.navigation.productName,
-                            productData: this.state.productData,
-                            base_url: base_url,
-                            c_key: c_key,
-                            c_secret: c_secret
-                        });
-                    }}
-                >
-                    <Ionicons name="md-create" size={30} color="#96588a" />
-                </TouchableOpacity>
             </View>
         );
     }
+
+    //Display Functions Below
+
+    displayProductImages = () => {
+        return (
+            <View style={{ height: 150 }}>
+                {this.getProductImages()}
+            </View>
+        )
+    }
+
+    displayProductBasicDetails = () => {
+        return (
+            <View style={styles.section}>
+                <Text style={styles.titleText}>{this.state.productData.name}</Text>
+                <Text>Sku: {this.state.productData.sku}</Text>
+                <Text>Slug: {this.state.productData.slug}</Text>
+                <Text>Status: {this.state.productData.status}</Text>
+                <Text>Total Ordered: {this.state.productData.total_sales}</Text>
+            </View>
+        )
+    }
+
+    displayProductPricingDetails = () => {
+        return (
+            <View style={styles.section}>
+                <Text style={styles.titleText}>Pricing</Text>
+                <Text>Regular Price: {this.state.productData.regular_price}</Text>
+                <Text>Sale Price: {this.state.productData.sale_price}</Text>
+            </View>
+        )
+    }
+
+    displayProductInventoryDetails = () => {
+        return (
+            <View style={styles.section}>
+                <Text style={styles.titleText}>Inventory</Text>
+                <Text>Stock Status: {this.state.productData.stock_status}</Text>
+                <Text>Manage Stock: {this.state.productData.manage_stock ? 'Yes' : 'No'}</Text>
+                <Text>Stock Qty: {this.state.productData.stock_quantity}</Text>
+            </View>
+        )
+    }
+
+    displayProductShippingDetails = () => {
+        return (
+            <View style={styles.section}>
+                <Text style={styles.titleText}>Shipping</Text>
+                <Text>Weight: {this.state.productData.weight}</Text>
+                <Text>Size: {('dimensions' in this.state.productData) ? this.state.productData.dimensions.length : null}
+                    {('dimensions' in this.state.productData)
+                        ? (this.state.productData.dimensions.length) ?
+                            `x${this.state.productData.dimensions.width}`
+                            : null
+                        : null}
+                    {('dimensions' in this.state.productData)
+                        ? (this.state.productData.dimensions.length)
+                            ? `x${this.state.productData.dimensions.height}`
+                            : null
+                        : null}
+                </Text>
+            </View>
+        )
+    }
+
+    displayProductCategoriesDetails = () => {
+        return (
+            <View style={styles.section}>
+                <Text style={styles.titleText}>Categories</Text>
+                <ScrollView horizontal={true}>{this.getProductCategories()}</ScrollView>
+            </View>
+        )
+    }
+
+    displayProductAttributesDetails = () => {
+        return (
+            <View style={styles.section}>
+                <Text style={styles.titleText}>Attributes</Text>
+                <>{this.getProductAttributes()}</>
+            </View>
+        )
+    }
+
+    displayEditProductButton = () => {
+        return (
+            <TouchableOpacity
+                style={{
+                    borderWidth: 1,
+                    borderColor: 'rgba(0,0,0,0.2)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 60,
+                    height: 60,
+                    position: 'absolute',
+                    bottom: 15,
+                    right: 15,
+                    backgroundColor: '#fff',
+                    borderRadius: 100,
+                }}
+                onPress={() => {
+                    this.props.navigation.navigate('EditProduct', {
+                        productId: productId,
+                        productName: this.props.navigation.productName,
+                        productData: this.state.productData,
+                        base_url: base_url,
+                        c_key: c_key,
+                        c_secret: c_secret
+                    });
+                }}
+            >
+                <Ionicons name="md-create" size={30} color="#96588a" />
+            </TouchableOpacity>
+        )
+    }
+
 }
 
 const styles = StyleSheet.create({
