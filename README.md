@@ -16,8 +16,6 @@ A React Native woocommerce admin application for android currently in developeme
 ## Roadmap
 - Include more fields in edit products
 - Include add simple products option
-- Include more reports in woocommerce store reports
-- Include date filter to get fully cusomizable reports
 
 ## Screenshots
 ### **Login Screen**
