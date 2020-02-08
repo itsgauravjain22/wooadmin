@@ -3,18 +3,14 @@ import { StyleSheet, Text, View, TouchableOpacity, Clipboard, Image, ScrollView,
 import Moment from 'moment';
 import * as SecureStore from 'expo-secure-store';
 import GLOBAL from './customerglobal'
+
+const config = require('../../../config.json');
+
 export default class CustomerDetails extends Component {
 
     static navigationOptions = ({ navigation }) => {
         return {
-            title: `#${navigation.getParam('customerId', 'Customer Details')}`,
-            headerStyle: {
-                backgroundColor: '#96588a',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-            },
+            title: `#${navigation.getParam('customerId', 'Customer Details')}`
         };
     };
 
@@ -73,7 +69,7 @@ export default class CustomerDetails extends Component {
         if (this.state.loading) {
             return (
                 <View style={{ flex: 1, justifyContent: "center", alignContent: "center", padding: 20 }}>
-                    <ActivityIndicator color='#96588a' size='large' />
+                    <ActivityIndicator color={config.colors.loadingColor} size='large' />
                 </View>
             )
         }

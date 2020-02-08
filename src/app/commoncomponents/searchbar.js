@@ -3,6 +3,8 @@ import { View, TextInput, Text, TouchableOpacity, Modal, StyleSheet, ToastAndroi
 import { Ionicons } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
+const config = require('../../../config.json');
+
 export default class SearchBar extends Component {
     constructor(props) {
         super(props);
@@ -46,14 +48,14 @@ export default class SearchBar extends Component {
                             onBarCodeScanned={this.handleBarcodeOutput}
                             style={StyleSheet.absoluteFillObject, { flex: 1, alignItems: 'center', justifyContent: 'center' }}
                         >
-                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{
                                     fontSize: 25,
                                     fontWeight: 'bold',
                                     margin: 10,
                                     textAlign: 'center',
                                     width: '70%',
-                                    color: 'white',
+                                    color: config.colors.iconLightColor,
                                 }}
                                 >Scan Barcode</Text>
                                 <View
@@ -68,7 +70,7 @@ export default class SearchBar extends Component {
                                 <TouchableOpacity
                                     onPress={() => this.setState({ barcodeScannerShown: false })}
                                 >
-                                    <Ionicons name='md-close-circle-outline' height size={60} color='white' />
+                                    <Ionicons name='md-close-circle-outline' height size={60} color={config.colors.iconLightColor} />
                                 </TouchableOpacity>
                             </View>
                         </BarCodeScanner>
@@ -112,9 +114,14 @@ export default class SearchBar extends Component {
                         />
                     </View>
                     <View style={{ width: 50 }}>
-                        <TouchableOpacity style={{ height: '100%', backgroundColor: '#96588a', justifyContent: 'center', alignItems: 'center' }}
+                        <TouchableOpacity style={{
+                            height: '100%',
+                            backgroundColor: config.colors.btnColor,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
                             onPress={() => this.setState({ barcodeScannerShown: true })}>
-                            <Ionicons name='md-barcode' height size={32} color='white' />
+                            <Ionicons name='md-barcode' height size={32} color={config.colors.iconLightColor} />
                         </TouchableOpacity>
                     </View>
                 </View>

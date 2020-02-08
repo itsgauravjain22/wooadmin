@@ -3,6 +3,7 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import { Ionicons } from '@expo/vector-icons';
+import * as Sentry from 'sentry-expo';
 import AuthLoadingScreen from './src/app/account/auth'
 import Login from './src/app/account/login'
 import Reports from './src/app/report/reports'
@@ -14,6 +15,14 @@ import OrderDetails from './src/app/order/orderdetails';
 import CustomersList from './src/app/customer/customerslist'
 import CustomerDetails from './src/app/customer/customerdetails'
 import Settings from './src/app/setting/settings'
+
+const config = require('./config.json');
+
+Sentry.init({
+  dsn: 'https://bfd12dd5d0464e70a4402c2562118815@sentry.io/2344328',
+  enableInExpoDevelopment: false,
+  debug: true
+});
 
 export default class App extends Component {
 
@@ -45,9 +54,9 @@ const CustomerNavigator = createStackNavigator({
   initialRouteName: 'Customers',
   defaultNavigationOptions: {
     headerStyle: {
-      backgroundColor: '#96588a',
+      backgroundColor: config.colors.headerBackColor,
     },
-    headerTintColor: 'white',
+    headerTintColor: config.colors.headerTextColor,
     headerTitleStyle: {
       fontWeight: 'bold',
     }
@@ -63,9 +72,9 @@ const ProductNavigator = createStackNavigator({
   initialRouteName: 'Products',
   defaultNavigationOptions: {
     headerStyle: {
-      backgroundColor: '#96588a',
+      backgroundColor: config.colors.headerBackColor,
     },
-    headerTintColor: 'white',
+    headerTintColor: config.colors.headerTextColor,
     headerTitleStyle: {
       fontWeight: 'bold',
     }
@@ -80,9 +89,9 @@ const OrderNavigator = createStackNavigator({
   initialRouteName: 'Orders',
   defaultNavigationOptions: {
     headerStyle: {
-      backgroundColor: '#96588a',
+      backgroundColor: config.colors.headerBackColor,
     },
-    headerTintColor: 'white',
+    headerTintColor: config.colors.headerTextColor,
     headerTitleStyle: {
       fontWeight: 'bold',
     }
@@ -96,9 +105,9 @@ const reportNavigator = createStackNavigator({
   initialRouteName: 'Reports',
   defaultNavigationOptions: {
     headerStyle: {
-      backgroundColor: '#96588a',
+      backgroundColor: config.colors.headerBackColor,
     },
-    headerTintColor: 'white',
+    headerTintColor: config.colors.headerTextColor,
     headerTitleStyle: {
       fontWeight: 'bold',
     }
@@ -131,8 +140,8 @@ const TabNavigator = createBottomTabNavigator({
       }
     }),
     tabBarOptions: {
-      activeTintColor: '#96588a',
-      inactiveTintColor: 'gray',
+      activeTintColor: config.colors.tabActiveColor,
+      inactiveTintColor: config.colors.tabInactiveColor,
     },
   }
 );

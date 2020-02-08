@@ -5,6 +5,8 @@ import {
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
+const config = require('../../../config.json');
+
 export default class Login extends Component {
 
     static navigationOptions = ({ navigation }) => {
@@ -136,15 +138,14 @@ export default class Login extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View>
-                                {this.state.loading ? (
-                                    <ActivityIndicator size="large" color='#96588a' />
-                                ) : (
-                                        <TouchableOpacity style={styles.loginBtn} onPress={this.submitButton}>
-                                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
-                                                Login
+                                {this.state.loading
+                                    ? <ActivityIndicator size="large" color={config.colors.loadingColor} />
+                                    : <TouchableOpacity style={styles.loginBtn} onPress={this.submitButton}>
+                                        <Text style={styles.loginBtnText}>
+                                            Login
                                         </Text>
-                                        </TouchableOpacity>
-                                    )}
+                                    </TouchableOpacity>
+                                }
 
                             </View>
                         </View>
@@ -176,8 +177,8 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 50,
         marginTop: 10,
-        color: '#96588a',
-        borderBottomColor: '#96588a',
+        color: config.colors.textInputColor,
+        borderBottomColor: config.colors.textInputColor,
         borderBottomWidth: 1,
     },
     showPassword: {
@@ -186,10 +187,15 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end'
     },
     loginBtn: {
-        backgroundColor: '#96588a',
+        backgroundColor: config.colors.btnColor,
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 15,
         height: 50,
+    },
+    loginBtnText: {
+        color: config.colors.btnTextColor,
+        fontWeight: 'bold',
+        fontSize: 16
     }
 });

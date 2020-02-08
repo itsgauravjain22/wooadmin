@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Clipboard, Image, ScrollView, ActivityIndicator, Modal } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+
+const config = require('../../../config.json');
 
 export default class RadioButtons extends Component {
 
@@ -65,6 +67,6 @@ const styles = StyleSheet.create({
         width: 14,
         height: 14,
         borderRadius: 7,
-        backgroundColor: '#96588a',
+        backgroundColor: config.colors.radioCheckedColor,
     }
 });

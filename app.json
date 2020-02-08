@@ -6,7 +6,7 @@
     "slug": "wooadmin",
     "privacy": "public",
     "sdkVersion": "36.0.0",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "entryPoint": "./node_modules/expo/AppEntry.js",
     "platforms": [
       "android"
@@ -16,11 +16,23 @@
     "description": "A react native woocommerce admin app.",
     "android": {
       "package": "com.wooadmin.wooadmin",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": [
         "CAMERA"
       ]
     },
-    "owner": "itsgauravjain22"
+    "owner": "itsgauravjain22",
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "gaurav-jain-apps",
+            "project": "wooadmin",
+            "authToken": "1f61a15c83fb4824b179aef5d2db166e3bf2f81cf202430da962591229c9f1fa"
+          }
+        }
+      ]
+    }
   }
 }

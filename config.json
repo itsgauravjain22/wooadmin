@@ -1,0 +1,20 @@
+{
+    "colors": {
+        "loadingColor": "#96588a",
+        "headerBackColor": "#96588a",
+        "headerTextColor": "white",
+        "headerRightColor": "white",
+        "tabInactiveColor": "gray",
+        "tabActiveColor": "#96588a",
+        "iconLightColor": "white",
+        "textInputColor": "#96588a",
+        "switchTrackColor": "#D5BCD0",
+        "switchThumbColor": "#96588a",
+        "radioCheckedColor": "#96588a",
+        "btnColor": "#96588a",
+        "btnTextColor": "white",
+        "barChartDataColor": "#96588a",
+        "pieChartDataColors": ["#96588a", "#CBACC5"],
+        "multiSelectSelectedColor": "#96588a"
+    }
+}

@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import GLOBAL from './customerglobal'
 import SearchBar from '../commoncomponents/searchbar'
 
+const config = require('../../../config.json');
+
 export default class OrdersList extends Component {
 
     static navigationOptions = ({ navigation }) => {
@@ -16,7 +18,7 @@ export default class OrdersList extends Component {
                     style={{ paddingRight: 20 }}
                     onPress={() => { navigation.navigate("Settings") }}
                 >
-                    <Ionicons name='md-more' size={25} color='white' />
+                    <Ionicons name='md-more' size={25} color={config.colors.headerRightColor} />
                 </TouchableOpacity>
             ),
         }
@@ -115,7 +117,7 @@ export default class OrdersList extends Component {
             <View style={{
                 paddingVertical: 20,
             }}>
-                <ActivityIndicator color='#96588a' size='large' />
+                <ActivityIndicator color={config.colors.loadingColor} size='large' />
             </View>
         )
     }

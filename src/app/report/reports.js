@@ -2,14 +2,25 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as SecureStore from 'expo-secure-store';
+import { Ionicons } from '@expo/vector-icons';
 import { VictoryChart, VictoryBar, VictoryPie, VictoryAxis, VictoryLabel } from 'victory-native';
 import moment from 'moment';
+
+const config = require('../../../config.json');
 
 export default class Reports extends Component {
 
     static navigationOptions = ({ navigation }) => {
         return {
             title: 'Reports',
+            headerRight: () => (
+                <TouchableOpacity
+                    style={{ paddingRight: 20 }}
+                    onPress={() => { navigation.navigate("Settings") }}
+                >
+                    <Ionicons name='md-more' size={25} color={config.colors.iconLightColor} />
+                </TouchableOpacity>
+            ),
         };
     };
 
@@ -425,7 +436,7 @@ export default class Reports extends Component {
                                         x='x'
                                         y='y'
                                         style={{
-                                            data: { fill: '#96588a' }
+                                            data: { fill: config.colors.barChartDataColor }
                                         }}
                                         barRatio={1}
                                         horizontal={false}
@@ -466,7 +477,7 @@ export default class Reports extends Component {
                                         x='x'
                                         y='y'
                                         style={{
-                                            data: { fill: '#96588a' }
+                                            data: { fill: config.colors.barChartDataColor }
                                         }}
                                         barRatio={1}
                                         horizontal={false}
@@ -507,7 +518,7 @@ export default class Reports extends Component {
                                         x='x'
                                         y='y'
                                         style={{
-                                            data: { fill: '#96588a' }
+                                            data: { fill: config.colors.barChartDataColor }
                                         }}
                                         barRatio={1}
                                         horizontal={false}
@@ -548,7 +559,7 @@ export default class Reports extends Component {
                                         x='x'
                                         y='y'
                                         style={{
-                                            data: { fill: '#96588a' }
+                                            data: { fill: config.colors.barChartDataColor }
                                         }}
                                         barRatio={1}
                                         horizontal={false}
@@ -560,7 +571,7 @@ export default class Reports extends Component {
                             flex: -1, justifyContent: "center",
                             alignContent: "center", padding: 20
                         }}>
-                            <ActivityIndicator color='#96588a' size='large' />
+                            <ActivityIndicator color={config.colors.loadingColor} size='large' />
                         </View>
                 }
             </View>
@@ -603,7 +614,7 @@ export default class Reports extends Component {
                                 y='total'
                                 labels={({ datum }) => datum._y}
                                 style={{
-                                    data: { fill: '#96588a' },
+                                    data: { fill: config.colors.barChartDataColor },
                                     labels: { fill: 'black' }
                                 }}
                                 barRatio={1}
@@ -615,7 +626,7 @@ export default class Reports extends Component {
                         flex: -1, justifyContent: "center",
                         alignContent: "center", padding: 20
                     }}>
-                        <ActivityIndicator color='#96588a' size='large' />
+                        <ActivityIndicator color={ config.colors.loadingColor } size='large' />
                     </View>}
             </View >
         )
@@ -642,7 +653,7 @@ export default class Reports extends Component {
                             data={this.state.customersTotalsReportData}
                             x='name'
                             y='total'
-                            colorScale={['#96588a', '#CBACC5']}
+                            colorScale={ config.colors.pieChartDataColors }
                             labels={({ datum }) => `${datum.name} ${datum._y}`}
                         />
                     </View>
@@ -650,7 +661,7 @@ export default class Reports extends Component {
                         flex: -1, justifyContent: "center",
                         alignContent: "center", padding: 20
                     }}>
-                        <ActivityIndicator color='#96588a' size='large' />
+                        <ActivityIndicator color={ config.colors.loadingColor } size='large' />
                     </View>
                 }
             </View >
@@ -675,7 +686,7 @@ export default class Reports extends Component {
                 {this.state.isReviewsTotalsReportDataReady
                     ? reviewsTotalsReportDataArray
                     : <View style={{ flex: -1, justifyContent: "center", alignContent: "center", padding: 20 }}>
-                        <ActivityIndicator color='#96588a' size='large' />
+                        <ActivityIndicator color={ config.colors.loadingColor } size='large' />
                     </View>}
             </View >
         )
@@ -699,7 +710,7 @@ export default class Reports extends Component {
                 {this.state.isProductsTotalsReportDataReady
                     ? productsTotalsReportDataArray
                     : <View style={{ flex: -1, justifyContent: "center", alignContent: "center", padding: 20 }}>
-                        <ActivityIndicator color='#96588a' size='large' />
+                        <ActivityIndicator color={ config.colors.loadingColor } size='large' />
                     </View>}
             </View >
         )
@@ -723,7 +734,7 @@ export default class Reports extends Component {
                 {this.state.isCouponsTotalsReportDataReady
                     ? couponsTotalsReportDataArray
                     : <View style={{ flex: -1, justifyContent: "center", alignContent: "center", padding: 20 }}>
-                        <ActivityIndicator color='#96588a' size='large' />
+                        <ActivityIndicator color={ config.colors.loadingColor } size='large' />
                     </View>}
             </View >
         )

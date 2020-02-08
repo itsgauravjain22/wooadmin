@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
+const config = require('../../../config.json');
+
 export default class Settings extends Component {
     constructor(props) {
         super(props);
@@ -25,7 +27,7 @@ export default class Settings extends Component {
                         height: 50,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        backgroundColor: '#96588a'
+                        backgroundColor: config.colors.btnColor
                     }}
                     onPress = {this.logout}
                 >

@@ -7,6 +7,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import MultiSelect from 'react-native-multiple-select';
 import GLOBAL from './productglobal'
 
+const config = require('../../../config.json');
+
 export default class EditProduct extends Component {
 
     static navigationOptions = ({ navigation }) => {
@@ -64,7 +66,7 @@ export default class EditProduct extends Component {
         if (this.state.loading) {
             return (
                 <View style={{ flex: 1, justifyContent: "center", alignContent: "center", padding: 20 }}>
-                    <ActivityIndicator color='#96588a' size='large' />
+                    <ActivityIndicator color={config.colors.loadingColor} size='large' />
                 </View>
             )
         }
@@ -192,9 +194,9 @@ export default class EditProduct extends Component {
                         searchInputPlaceholderText="Search Category..."
                         searchInputStyle={{ height: 40, color: 'black' }}
                         itemTextColor='black'
-                        selectedItemTextColor='#96588a'
-                        selectedItemIconColor='#96588a'
-                        submitButtonColor='#96588a'
+                        selectedItemTextColor={config.colors.multiSelectSelectedColor}
+                        selectedItemIconColor={config.colors.multiSelectSelectedColor}
+                        submitButtonColor={config.colors.btnColor}
                         submitButtonText='Update Categories'
                     />
                 </View>
@@ -328,8 +330,8 @@ export default class EditProduct extends Component {
                     </View>
                     <View style={[styles.sectionRowRightCol, {alignItems: 'center'}]}>
                         <Switch
-                            thumbColor={'#96588a'}
-                            trackColor={{ true: '#D5BCD0' }}
+                            thumbColor={config.colors.switchThumbColor}
+                            trackColor={{ true: config.colors.switchTrackColor }}
                             value={this.state.manageStock}
                             onValueChange={(value) => {
                                 this.setState({ manageStock: value })
@@ -464,8 +466,8 @@ export default class EditProduct extends Component {
                     </View>
                     <View style={styles.sectionRowRightCol}>
                         <Switch
-                            thumbColor={'#96588a'}
-                            trackColor={{ true: '#D5BCD0' }}
+                            thumbColor={config.color.switchThumbColor}
+                            trackColor={{ true: config.color.switchTrackColor }}
                             value={this.state.virtual}
                             onValueChange={(value) => {
                                 this.setState({ virtual: value })
@@ -479,8 +481,8 @@ export default class EditProduct extends Component {
                     </View>
                     <View style={styles.sectionRowRightCol}>
                         <Switch
-                            thumbColor={'#96588a'}
-                            trackColor={{ true: '#D5BCD0' }}
+                            thumbColor={config.colors.switchThumbColor}
+                            trackColor={{ true: config.switchTrackColor }}
                             value={this.state.downloadable}
                             onValueChange={(value) => {
                                 this.setState({ downloadable: value })
@@ -499,11 +501,11 @@ export default class EditProduct extends Component {
                     alignItems: 'center',
                     justifyContent: 'center',
                     height: 50,
-                    backgroundColor: '#96588a'
+                    backgroundColor: config.colors.btnSubmit
                 }}
                 onPress={this.handleSubmit}
             >
-                <Text style={{ color: 'white' }}>Submit</Text>
+                <Text style={{ color: config.colors.btnTextColor }}>Submit</Text>
             </TouchableOpacity>
         )
     }

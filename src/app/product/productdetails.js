@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, ActivityIn
 import { Ionicons } from '@expo/vector-icons';
 import GLOBAL from './productglobal'
 
+const config = require('../../../config.json');
+
 export default class ProductDetails extends Component {
 
     static navigationOptions = ({ navigation }) => {
@@ -133,14 +135,14 @@ export default class ProductDetails extends Component {
         if (this.state.loading) {
             return (
                 <View style={{ flex: 1, justifyContent: "center", alignContent: "center", padding: 20 }}>
-                    <ActivityIndicator color='#96588a' size='large' />
+                    <ActivityIndicator color={config.colors.loadingColor} size='large' />
                 </View>
             )
         }
 
         return (
             <View style={{ flex: 1 }}>
-                {this.state.loading ? <ActivityIndicator size='large' color='#96588a' /> :
+                {this.state.loading ? <ActivityIndicator size='large' color={config.colors.loadingColor} /> :
                     <View style={{ flex: 1 }}>
                         <ScrollView style={{ flex: 1 }}>
                             {this.displayProductImages()}
@@ -267,7 +269,7 @@ export default class ProductDetails extends Component {
                     });
                 }}
             >
-                <Ionicons name="md-create" size={30} color="#96588a" />
+                <Ionicons name="md-create" size={30} color={config.colors.btnColor} />
             </TouchableOpacity>
         )
     }

@@ -5,6 +5,8 @@ import GLOBAL from './productglobal'
 import { Ionicons } from '@expo/vector-icons';
 import SearchBar from '../commoncomponents/searchbar'
 
+const config = require('../../../config.json');
+
 export default class ProductsList extends Component {
 
     static navigationOptions = ({ navigation }) => {
@@ -15,7 +17,7 @@ export default class ProductsList extends Component {
                     style={{ paddingRight: 20 }}
                     onPress={() => { navigation.navigate("Settings") }}
                 >
-                    <Ionicons name='md-more' size={25} color='white' />
+                    <Ionicons name='md-more' size={25} color={config.colors.iconLightColor} />
                 </TouchableOpacity>
             ),
         }
@@ -113,7 +115,7 @@ export default class ProductsList extends Component {
             <View style={{
                 paddingVertical: 20,
             }}>
-                <ActivityIndicator color='#96588a' size='large' />
+                <ActivityIndicator color={config.colors.loadingColor} size='large' />
             </View>
         )
     }
@@ -167,7 +169,7 @@ export default class ProductsList extends Component {
                                 style={{ height: 115, width: 115 }}
                                 resizeMode='contain'
                             />
-                            : <Ionicons name='logo-dropbox' size={100} color='gray' />
+                            : <Ionicons name='logo-dropbox' size={100} color={config.colors.iconLightColor} />
                         }
                     </View>
                     <View style={{ flex: 2, marginTop: 10, marginBottom: 10, justifyContent: "center" }}>

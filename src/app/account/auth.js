@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { ActivityIndicator, View} from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
+const config = require('../../../config.json');
+
 export default class AuthLoadingScreen extends Component {
     componentDidMount() {
         // this.x();
@@ -18,7 +20,7 @@ export default class AuthLoadingScreen extends Component {
     render() {
         return (
             <View style={{flex:1, justifyContent: 'center', alignContent: 'center'}}>
-                <ActivityIndicator  size='large' color='#96588a'/>
+                <ActivityIndicator  size='large' color={config.colors.loadingColor}/>
             </View>
         )
     }

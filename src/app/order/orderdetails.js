@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import RadioButtons from '../commoncomponents/radiobuttons'
 import GLOBAL from './orderglobal'
 
+const config = require('../../../config.json');
+
 export default class OrderDetails extends Component {
     constructor(props) {
         super(props);
@@ -26,14 +28,7 @@ export default class OrderDetails extends Component {
 
     static navigationOptions = ({ navigation }) => {
         return {
-            title: `#${navigation.getParam('orderId', 'Order Details')}`,
-            headerStyle: {
-                backgroundColor: '#96588a',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-            },
+            title: `#${navigation.getParam('orderId', 'Order Details')}`
         };
     };
 
@@ -47,7 +42,7 @@ export default class OrderDetails extends Component {
         if (this.state.loading) {
             return (
                 <View style={{ flex: 1, justifyContent: "center", alignContent: "center", padding: 20 }}>
-                    <ActivityIndicator color='#96588a' size='large' />
+                    <ActivityIndicator color={config.colors.loadingColor} size='large' />
                 </View>
             )
         }
@@ -320,7 +315,7 @@ export default class OrderDetails extends Component {
                                 orderStatusModalShown: !this.state.orderStatusModalShown
                             })}
                         >
-                            <Ionicons name="md-create" size={25} color="#96588a" />
+                            <Ionicons name="md-create" size={25} color={config.colors.btnColor} />
                         </TouchableOpacity>
                     </View>
                     {this.displayOrderStatusModal()}
@@ -413,7 +408,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     modalControlText: {
-        color: '#96588a',
+        color: config.colors.btnColor,
         fontWeight: 'bold',
         marginRight: 15,
         marginBottom: 15
