@@ -16,18 +16,19 @@ A React Native woocommerce admin application for android currently in developeme
 ## Roadmap
 - Include more fields in edit products
 - Include add simple products option
-- Include more reports in woocommerce store reports
-- Include date filter to get fully cusomizable reports
 
 ## Screenshots
 ### **Login Screen**
 <p align="center">
-<img src="/screenshots/login.png"  width="50%" height="50%" />
-<img src="/screenshots/product-list.png"  width="50%" height="50%" />
-<img src="/screenshots/product-details.png"  width="50%" height="50%" />
-<img src="/screenshots/edit-product.png"  width="50%" height="50%" />
-<img src="/screenshots/order-list.png"  width="50%" height="50%" />
-<img src="/screenshots/order-details.png"  width="50%" height="50%" />
-<img src="/screenshots/edit-order.png"  width="50%" height="50%" />
-<img src="/screenshots/logout.png"  width="50%" height="50%" />
+  <img src="/screenshots/login.png"  width="50%" height="50%" />
+  <img src="/screenshots/reports.png"  width="50%" height="50%" />
+  <img src="/screenshots/orders-list.png"  width="50%" height="50%" />
+  <img src="/screenshots/order-details.png"  width="50%" height="50%" />
+  <img src="/screenshots/edit-order.png"  width="50%" height="50%" />
+  <img src="/screenshots/products-list.png"  width="50%" height="50%" />
+  <img src="/screenshots/product-details.png"  width="50%" height="50%" />
+  <img src="/screenshots/edit-product.png"  width="50%" height="50%" />
+  <img src="/screenshots/customers-list.png"  width="50%" height="50%" />
+  <img src="/screenshots/customer-details.png"  width="50%" height="50%" />
+  <img src="/screenshots/logout.png"  width="50%" height="50%" />
 </p>
