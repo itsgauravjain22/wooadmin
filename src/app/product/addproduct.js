@@ -6,27 +6,27 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import MultiSelect from 'react-native-multiple-select';
 import * as SecureStore from 'expo-secure-store';
+import Base64 from '../../utility/base64';
 import GLOBAL from './productglobal'
 
 const config = require('../../../config.json');
 
-export default class EditProduct extends Component {
+export default class AddProduct extends Component {
 
     static navigationOptions = ({ navigation }) => {
         return {
-            title: 'Edit Product',
+            title: 'Add Product',
         };
     };
 
     constructor(props) {
         super(props);
-        productId = this.props.navigation.getParam('productId');
         this.state = {
             loading: true,
             error: null,
             base_url: null,
-            c_key: null,
-            c_secret: null,
+            username: null,
+            password: null,
             productCategoriesPage: 1,
             hasMoreProductCategoriesToLoad: true,
             productCategories: [],
@@ -50,8 +50,8 @@ export default class EditProduct extends Component {
             type: null,
             virtual: null,
             downloadable: null,
-        }
-        this._isMounted = false
+        };
+        this._isMounted = false;
     }
 
     async componentDidMount() {
@@ -67,8 +67,8 @@ export default class EditProduct extends Component {
         const credentialsJson = JSON.parse(credentials)
         this.setState({
             base_url: credentialsJson.base_url,
-            c_key: credentialsJson.c_key,
-            c_secret: credentialsJson.c_secret,
+            username: credentialsJson.username,
+            password: credentialsJson.password,
         })
     }
 
@@ -100,10 +100,15 @@ export default class EditProduct extends Component {
     //Fetch Functions Below
 
     fetchAllProductCategories = () => {
-        const { base_url, c_key, c_secret } = this.state;
-        const url = `${base_url}/wp-json/wc/v3/products/categories?per_page=20&page=${this.state.productCategoriesPage}&consumer_key=${c_key}&consumer_secret=${c_secret}`;
+        const { base_url, username, password, productCategoriesPage } = this.state;
+        const url = `${base_url}/wp-json/wc/v3/products/categories?per_page=20&page=${productCategoriesPage}`;
         this.setState({ loading: true });
-        fetch(url).then((response) => response.json())
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Basic ${Base64.btoa(username + ':' + password)}`
+            }
+        }).then((response) => response.json())
             .then((responseJson) => {
                 if (Array.isArray(responseJson) && responseJson.length > 0 && 'id' in responseJson[0]) {
                     responseJson.forEach((item, index) => {
@@ -117,134 +122,14 @@ export default class EditProduct extends Component {
                 } else if (Array.isArray(responseJson) && responseJson.length === 0) {
                     this.setState({
                         hasMoreProductCategoriesToLoad: false,
-                    }, this.fetchProductDetails)
+                        loading: false
+                    })
                 } else if ('code' in responseJson) {
                     this.setState({
                         error: responseJson.code,
                         loading: false
                     })
                 }
-            }).catch((error) => {
-                this.setState({
-                    error,
-                    loading: false
-                })
-            });
-    }
-
-    fetchProductDetails = () => {
-        const { base_url, c_key, c_secret } = this.state;
-        const url = `${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`;
-        this.setState({ loading: true });
-        fetch(url).then((response) => response.json())
-            .then((responseJson) => {
-                if (!'code' in responseJson) {
-                    this.setState({
-                        productData: responseJson
-                    })
-                }
-                if ('name' in responseJson) {
-                    this.setState({
-                        name: responseJson.name
-                    })
-                }
-                if ('sku' in responseJson) {
-                    this.setState({
-                        sku: responseJson.sku
-                    })
-                }
-                if ('status' in responseJson) {
-                    this.setState({
-                        status: responseJson.status
-                    })
-                }
-                if ('regular_price' in responseJson) {
-                    this.setState({
-                        regularPrice: responseJson.regular_price
-                    })
-                }
-                if ('sale_price' in responseJson) {
-                    this.setState({
-                        salePrice: responseJson.sale_price
-                    })
-                }
-                if ('date_on_sale_from' in responseJson) {
-                    this.setState({
-                        dateOnSaleFrom: responseJson.date_on_sale_from ? responseJson.date_on_sale_from : ''
-                    })
-                }
-                if ('date_on_sale_to' in responseJson) {
-                    this.setState({
-                        dateOnSaleTo: responseJson.date_on_sale_to ? responseJson.date_on_sale_to : ''
-                    })
-                }
-                if ('manage_stock' in responseJson) {
-                    this.setState({
-                        manageStock: responseJson.manage_stock
-                    })
-                }
-                if ('stock_status' in responseJson) {
-                    this.setState({
-                        stockStatus: responseJson.stock_status
-                    })
-                }
-                if ('stock_quantity' in responseJson) {
-                    this.setState({
-                        stockQuantity: responseJson.stock_quantity
-                    })
-                }
-                if ('weight' in responseJson) {
-                    this.setState({
-                        weight: responseJson.weight
-                    })
-                }
-                if ("dimensions" in responseJson) {
-                    if ('length' in responseJson.dimensions) {
-                        this.setState({
-                            length: responseJson.dimensions.length
-                        })
-                    }
-                    if ('width' in responseJson.dimensions) {
-                        this.setState({
-                            width: responseJson.dimensions.width
-                        })
-                    }
-                    if ('height' in responseJson.dimensions) {
-                        this.setState({
-                            height: responseJson.dimensions.height
-                        })
-                    }
-                }
-                if ('type' in responseJson) {
-                    this.setState({
-                        type: responseJson.type
-                    })
-                }
-                if ('virtual' in responseJson) {
-                    this.setState({
-                        virtual: responseJson.virtual
-                    })
-                }
-                if ('downloadable' in responseJson) {
-                    this.setState({
-                        downloadable: responseJson.downloadable
-                    })
-                }
-                if ('categories' in responseJson && Array.isArray(responseJson.categories) && responseJson.categories.length) {
-                    let selectedProductCategories = []
-                    responseJson.categories.forEach(item => {
-                        if (item.id) {
-                            selectedProductCategories.push(item.id.toString())
-                        }
-                    })
-                    this.setState({
-                        selectedProductCategories: selectedProductCategories
-                    })
-                }
-                this.setState({
-                    error: responseJson.code || null,
-                    loading: false,
-                })
             }).catch((error) => {
                 this.setState({
                     error,
@@ -664,34 +549,33 @@ export default class EditProduct extends Component {
             "stock_status": this.state.stockStatus,
             "stock_quantity": this.state.stockQuantity,
             "weight": this.state.weight,
-            "dimensions": { "length": this.state.length, "width": this.state.width, "height": this.state.height },
+            "dimensions": { "length": `${this.state.length}`, "width": `${this.state.width}`, "height": `${this.state.height}` },
             "type": this.state.type,
             "virtual": this.state.virtual,
             "downloadable": this.state.downloadable,
             "categories": updatedProductCategoriesArray
         };
-        const { base_url, c_key, c_secret } = this.state
-        const url = `${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`;
+        const { base_url, username, password } = this.state;
+        const url = `${base_url}/wp-json/wc/v3/products`;
         this.setState({ loading: true });
+        let headers = {
+            'Authorization': `Basic ${Base64.btoa(username + ':' + password)}`,
+            'Content-Type': 'application/json'
+        }
         fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            method: 'POST',
+            headers: headers,
             body: JSON.stringify(updatedProductObject),
         }).then((response) => response.json())
             .then((responseJson) => {
-                if ("code" in responseJson) {
-                    ToastAndroid.show(`Product Not Updated. Code: ${responseJson.code}`, ToastAndroid.LONG);
-                    this.setState({
-                        error: responseJson.code,
-                        loading: false,
-                    })
+                this.setState({
+                    error: responseJson.code || null,
+                    loading: false,
+                });
+                if ("message" in responseJson) {
+                    ToastAndroid.show(`Product Not Added. Code: ${responseJson.message}`, ToastAndroid.LONG);
                 } else {
-                    ToastAndroid.show('Product Updated', ToastAndroid.LONG);
-                    GLOBAL.productdetailsScreen.fetchProductDetails()
-                    GLOBAL.productslistScreen.handleRefresh()
-                    this.props.navigation.navigate('ProductDetails')
+                    ToastAndroid.show('Product Added', ToastAndroid.LONG);
                 }
             }).catch((error) => {
                 this.setState({
@@ -699,6 +583,7 @@ export default class EditProduct extends Component {
                     loading: false,
                 })
             });
+        GLOBAL.productslistScreen.handleRefresh()
     }
 }
 

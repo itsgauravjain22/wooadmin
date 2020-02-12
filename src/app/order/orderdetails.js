@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Clipboard, Image, ScrollView, ActivityIndicator, Modal, ToastAndroid } from 'react-native';
+import {
+    StyleSheet, Text, View, TouchableOpacity, Clipboard, Image,
+    ScrollView, ActivityIndicator, Modal, ToastAndroid
+} from 'react-native';
 import Moment from 'moment';
+import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 import RadioButtons from '../commoncomponents/radiobuttons'
 import GLOBAL from './orderglobal'
@@ -11,6 +15,10 @@ export default class OrderDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            base_url: null,
+            c_key: null,
+            c_secret: null,
+            isOrderDataReady: false,
             orderData: null,
             loading: true,
             imageLoading: false,
@@ -21,9 +29,6 @@ export default class OrderDetails extends Component {
         };
         GLOBAL.orderdetailsScreen = this;
         orderId = this.props.navigation.getParam('orderId');
-        base_url = this.props.navigation.getParam('base_url');
-        c_key = this.props.navigation.getParam('c_key');
-        c_secret = this.props.navigation.getParam('c_secret');
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -32,7 +37,9 @@ export default class OrderDetails extends Component {
         };
     };
 
-    componentDidMount() {
+    async componentDidMount() {
+        this._isMounted = true;
+        this._isMounted && await this.getCredentials();
         this.focusListener = this.props.navigation.addListener('didFocus', () => {
             this.fetchOrderDetails()
         });
@@ -45,53 +52,85 @@ export default class OrderDetails extends Component {
                     <ActivityIndicator color={config.colors.loadingColor} size='large' />
                 </View>
             )
+        } else {
+            return (
+                <ScrollView style={{ flex: 1 }}>
+                    {this.displayOrderDataSection()}
+                    {this.displayProductSection()}
+                    {this.displayPaymentSection()}
+                    {this.displayShippingDetailsSection()}
+                    {this.displayBillingDetailsSection()}
+                </ScrollView>
+            );
         }
-
-        return (
-            <ScrollView style={{ flex: 1 }}>
-                {this.displayOrderDataSection()}
-                {this.displayProductSection()}
-                {this.displayPaymentSection()}
-                {this.displayShippingDetailsSection()}
-                {this.displayBillingDetailsSection()}
-            </ScrollView>
-        );
     }
 
+    getCredentials = async () => {
+        const credentials = await SecureStore.getItemAsync('credentials');
+        const credentialsJson = JSON.parse(credentials)
+        this.setState({
+            base_url: credentialsJson.base_url,
+            c_key: credentialsJson.c_key,
+            c_secret: credentialsJson.c_secret,
+        })
+    }
+
+    //Fetch Function Below
+
     fetchOrderDetails = () => {
+        const { base_url, c_key, c_secret } = this.state
         const url = `${base_url}/wp-json/wc/v3/orders/${orderId}?consumer_key=${c_key}&consumer_secret=${c_secret}`;
         this.setState({ loading: true });
         fetch(url).then((response) => response.json())
             .then((responseJson) => {
-                this.setState({
-                    orderData: responseJson,
-                    error: responseJson.code || null,
-                }, this.fetchOrderStatus())
+                if ('code' in responseJson) {
+                    this.setState({
+                        isOrderDataReady: false,
+                        error: responseJson.code,
+                        loading: false
+                    })
+                    ToastAndroid.show(`Can't fetch order details. Error: ${responseJson.code}`, ToastAndroid.LONG);
+                } else {
+                    this.setState({
+                        isOrderDataReady: true,
+                        orderData: responseJson,
+                    }, this.fetchOrderStatus())
+                }
             }).catch((error) => {
                 this.setState({
                     error,
                     loading: false
                 })
+                ToastAndroid.show(`Can't fetch order details. Error: ${error}`, ToastAndroid.LONG);
             });
     }
 
     fetchOrderStatus = () => {
-        const orderStatusesurl = `${base_url}/wp-json/wc/v3/reports/orders/totals?consumer_key=${c_key}&consumer_secret=${c_secret}`;
-        fetch(orderStatusesurl).then(response => response.json())
+        const { base_url, c_key, c_secret } = this.state
+        const orderStatusesUrl = `${base_url}/wp-json/wc/v3/reports/orders/totals?consumer_key=${c_key}&consumer_secret=${c_secret}`;
+        this.setState({ loading: true })
+        fetch(orderStatusesUrl).then(response => response.json())
             .then(responseJson => {
-                let orderStatusMap = new Map();
-                if (Array.isArray(responseJson) && responseJson.length > 0) {
-                    if ('slug' in responseJson[0] && 'name' in responseJson[0]) {
-                        responseJson.forEach(item => {
-                            orderStatusMap.set(item.slug, item.name)
-                        })
+                if ('code' in responseJson) {
+                    this.setState({
+                        error: responseJson.code
+                    })
+                    ToastAndroid.show(`Can't fetch other order statuses. Error: ${responseJson.message}`, ToastAndroid.LONG);
+                } else {
+                    let orderStatusMap = new Map();
+                    if (Array.isArray(responseJson) && responseJson.length > 0) {
+                        if ('slug' in responseJson[0] && 'name' in responseJson[0]) {
+                            responseJson.forEach(item => {
+                                orderStatusMap.set(item.slug, item.name)
+                            })
+                        }
                     }
+                    this.setState({
+                        orderStatusOptions: [...orderStatusMap],
+                        orderStatusValue: this.state.orderData.status,
+                        loading: false,
+                    }, this.fetchOrderProductImages)
                 }
-                this.setState({
-                    orderStatusOptions: [...orderStatusMap],
-                    orderStatusValue: this.state.orderData.status,
-                    loading: false,
-                }, this.fetchOrderProductImages)
             })
     }
 
@@ -102,8 +141,9 @@ export default class OrderDetails extends Component {
     }
 
     fetchProductPrimaryImage = (productId, index) => {
+        const { base_url, c_key, c_secret } = this.state
         this.setState({ imageLoading: true });
-        let url = `${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`
+        const url = `${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`
         fetch(url)
             .then((response) => response.json())
             .then(responseJson => {
@@ -133,41 +173,47 @@ export default class OrderDetails extends Component {
     }
 
     getLineItems = () => {
-        let itemArray = [];
-        this.state.orderData.line_items.forEach(item => {
-            itemArray.push(
-                <View key={item.id} style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white' }}>
-                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                        <Image source={'primary_image_src' in item ? { uri: item.primary_image_src } : null}
-                            style={{ height: 100, width: 100 }} resizeMode='contain' />
-                    </View>
-                    <View style={{ flex: 2, marginTop: 10, marginBottom: 10, justifyContent: "center" }}>
-                        <View style={{ marginLeft: 10 }}>
-                            <Text>{item.name}</Text>
-                            <Text>SKU: {item.sku}</Text>
-                            <Text>Price: {this.getCurrencySymbol()}{item.price.toFixed(2)}</Text>
-                            <Text>Oty: {item.quantity}</Text>
-                            <View>{this.getTMProductOptions(item.meta_data)}</View>
+        if (this.state.isOrderDataReady) {
+            let itemArray = [];
+            this.state.orderData.line_items.forEach(item => {
+                itemArray.push(
+                    <View key={item.id} style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white' }}>
+                        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                            <Image source={'primary_image_src' in item ? { uri: item.primary_image_src } : null}
+                                style={{ height: 100, width: 100 }} resizeMode='contain' />
+                        </View>
+                        <View style={{ flex: 2, marginTop: 10, marginBottom: 10, justifyContent: "center" }}>
+                            <View style={{ marginLeft: 10 }}>
+                                <Text>{item.name}</Text>
+                                <Text>SKU: {item.sku}</Text>
+                                <Text>Price: {this.getCurrencySymbol()}{item.price.toFixed(2)}</Text>
+                                <Text>Oty: {item.quantity}</Text>
+                                <View>{this.getTMProductOptions(item.meta_data)}</View>
+                            </View>
                         </View>
                     </View>
-                </View>
-            )
-        })
-        return itemArray;
+                )
+            })
+            return itemArray;
+        } else return null
     }
 
     getProductTotal = () => {
-        let productTotal = 0;
-        this.state.orderData.line_items.forEach(item => {
-            productTotal += parseFloat(item.total);
-        });
-        return productTotal.toFixed(2);
+        if (this.state.isOrderDataReady) {
+            let productTotal = 0;
+            this.state.orderData.line_items.forEach(item => {
+                productTotal += parseFloat(item.total);
+            });
+            return productTotal.toFixed(2);
+        } else return null
     }
 
     getCurrencySymbol = () => {
-        return (this.state.orderData.currency_symbol)
-            ? this.state.orderData.currency_symbol
-            : this.state.orderData.currency;
+        if (this.state.isOrderDataReady) {
+            return (this.state.orderData.currency_symbol)
+                ? this.state.orderData.currency_symbol
+                : this.state.orderData.currency;
+        } else return null
     }
 
     //Get optionally TM Product Options Fees Total
@@ -301,88 +347,95 @@ export default class OrderDetails extends Component {
     }
 
     displayOrderDataSection = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Order #{this.state.orderData.number}</Text>
-                <Text>Created at {Moment(this.state.orderData.date_created).format('D/MM/YYYY h:m:s a')}</Text>
-                <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <View style={{ width: '90%' }}>
-                        <Text>Order Status: {this.state.orderData.status}</Text>
+        if (this.state.isOrderDataReady) {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.titleText}>Order #{this.state.orderData.number}</Text>
+                    <Text>Created at {Moment(this.state.orderData.date_created).format('D/MM/YYYY h:m:s a')}</Text>
+                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                        <View style={{ width: '90%' }}>
+                            <Text>Order Status: {this.state.orderData.status}</Text>
+                        </View>
+                        <View style={{ width: '10%', justifyContent: 'center', alignItems: 'center' }}>
+                            {config.permissions.orders.edit
+                                ? <TouchableOpacity
+                                    onPress={() => this.setState({
+                                        orderStatusModalShown: !this.state.orderStatusModalShown
+                                    })}
+                                >
+                                    <Ionicons name="md-create" size={25} color={config.colors.btnColor} />
+                                </TouchableOpacity>
+                                : null
+                            }
+                        </View>
+                        {this.displayOrderStatusModal()}
                     </View>
-                    <View style={{ width: '10%', justifyContent: 'center', alignItems: 'center' }}>
-                        <TouchableOpacity
-                            onPress={() => this.setState({
-                                orderStatusModalShown: !this.state.orderStatusModalShown
-                            })}
-                        >
-                            <Ionicons name="md-create" size={25} color={config.colors.btnColor} />
-                        </TouchableOpacity>
-                    </View>
-                    {this.displayOrderStatusModal()}
                 </View>
-            </View>
-        )
+            )
+        } else return null
     }
 
     displayProductSection = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Product</Text>
-                {this.getLineItems()}
-            </View>
-        )
+        if (this.state.isOrderDataReady) {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.titleText}>Product</Text>
+                    {this.getLineItems()}
+                </View>
+            )
+        } else return null
     }
 
     displayPaymentSection = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Payment</Text>
-                <Text>Payment Gateway: {this.state.orderData.payment_method_title}</Text>
-                <Text style={{ fontWeight: 'bold' }}>Order Total: {this.getCurrencySymbol()}{this.state.orderData.total}</Text>
-                <Text>Product Total: {this.getCurrencySymbol()}{this.getProductTotal()}</Text>
-                <Text>Shipping:{this.getCurrencySymbol()}{this.state.orderData.shipping_total}</Text>
-                <Text>Taxes: {this.getCurrencySymbol()}{this.state.orderData.total_tax}</Text>
-                {this.getTMProductOptionsFees()}
-            </View>
-        )
+        if (this.state.isOrderDataReady) {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.titleText}>Payment</Text>
+                    <Text>Payment Gateway: {this.state.orderData.payment_method_title}</Text>
+                    <Text style={{ fontWeight: 'bold' }}>Order Total: {this.getCurrencySymbol()}{this.state.orderData.total}</Text>
+                    <Text>Product Total: {this.getCurrencySymbol()}{this.getProductTotal()}</Text>
+                    <Text>Shipping:{this.getCurrencySymbol()}{this.state.orderData.shipping_total}</Text>
+                    <Text>Taxes: {this.getCurrencySymbol()}{this.state.orderData.total_tax}</Text>
+                    {this.getTMProductOptionsFees()}
+                </View>
+            )
+        } else return null
     }
 
     displayShippingDetailsSection = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Shipping Details</Text>
-                <TouchableOpacity
-                    onPress={() => Clipboard.setString(
-                        `${this.state.orderData.shipping.first_name} ${this.state.orderData.shipping.last_name}, ${this.state.orderData.shipping.address_1} ${this.state.orderData.shipping.address_2} ${this.state.orderData.shipping.city} ${this.state.orderData.shipping.postcode} ${this.state.orderData.shipping.state} ${this.state.orderData.shipping.country}`
-                    )}>
-                    <Text style={{ fontWeight: 'bold' }}>{this.state.orderData.shipping.first_name}
-                        {this.state.orderData.shipping.last_name}</Text>
-                    <Text>{this.state.orderData.shipping.address_1} {this.state.orderData.shipping.address_2}
-                        {this.state.orderData.shipping.city} {this.state.orderData.shipping.postcode}
-                        {this.state.orderData.shipping.state} {this.state.orderData.shipping.country}</Text>
-                </TouchableOpacity>
-            </View>
-        )
+        if (this.state.isOrderDataReady) {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.titleText}>Shipping Details</Text>
+                    <TouchableOpacity
+                        onPress={() => Clipboard.setString(
+                            `${this.state.orderData.shipping.first_name} ${this.state.orderData.shipping.last_name},\n${this.state.orderData.shipping.address_1} ${this.state.orderData.shipping.address_2} ${this.state.orderData.shipping.city} ${this.state.orderData.shipping.state} ${this.state.orderData.shipping.postcode} ${this.state.orderData.shipping.country}`
+                        )}>
+                        <Text style={{ fontWeight: 'bold' }}>{this.state.orderData.shipping.first_name} {this.state.orderData.shipping.last_name}</Text>
+                        <Text>{`${this.state.orderData.shipping.address_1} ${this.state.orderData.shipping.address_2} ${this.state.orderData.shipping.city} ${this.state.orderData.shipping.state} ${this.state.orderData.shipping.postcode} ${this.state.orderData.shipping.country}`}</Text>
+                    </TouchableOpacity>
+                </View>
+            )
+        } else return null
     }
 
     displayBillingDetailsSection = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Billing Details</Text>
-                <Text style={{ fontWeight: 'bold' }}>{this.state.orderData.billing.first_name}
-                    {this.state.orderData.billing.last_name}</Text>
-                <Text selectable dataDetectorType='phoneNumber'>Phone: {this.state.orderData.billing.phone}</Text>
-                <Text selectable dataDetectorType='email'>Email: {this.state.orderData.billing.email}</Text>
-                <TouchableOpacity
-                    onPress={() => Clipboard.setString(
-                        `${this.state.orderData.billing.first_name} ${this.state.orderData.billing.last_name}, ${this.state.orderData.billing.address_1} ${this.state.orderData.billing.address_2} ${this.state.orderData.billing.city} ${this.state.orderData.billing.postcode} ${this.state.orderData.billing.state} ${this.state.orderData.billing.country}`
-                    )}>
-                    <Text>Address: {this.state.orderData.billing.address_1} {this.state.orderData.billing.address_2}
-                        {this.state.orderData.billing.city} {this.state.orderData.billing.postcode}
-                        {this.state.orderData.billing.state} {this.state.orderData.billing.country}</Text>
-                </TouchableOpacity>
-            </View>
-        )
+        if (this.state.isOrderDataReady) {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.titleText}>Billing Details</Text>
+                    <Text style={{ fontWeight: 'bold' }}>{`${this.state.orderData.billing.first_name} ${this.state.orderData.billing.last_name}`}</Text>
+                    <Text selectable dataDetectorType='phoneNumber'>Phone: {this.state.orderData.billing.phone}</Text>
+                    <Text selectable dataDetectorType='email'>Email: {this.state.orderData.billing.email}</Text>
+                    <TouchableOpacity
+                        onPress={() => Clipboard.setString(
+                            `${this.state.orderData.billing.first_name} ${this.state.orderData.billing.last_name},\n${this.state.orderData.billing.address_1} ${this.state.orderData.billing.address_2} ${this.state.orderData.billing.city} ${this.state.orderData.billing.state} ${this.state.orderData.billing.postcode} ${this.state.orderData.billing.country}`
+                        )}>
+                        <Text>Address: {`${this.state.orderData.billing.address_1} ${this.state.orderData.billing.address_2} ${this.state.orderData.billing.city} ${this.state.orderData.billing.state} ${this.state.orderData.billing.postcode} ${this.state.orderData.billing.country}`}</Text>
+                    </TouchableOpacity>
+                </View>
+            )
+        } else return null
     }
 }
 

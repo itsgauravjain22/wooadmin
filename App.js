@@ -9,6 +9,7 @@ import Login from './src/app/account/login'
 import Reports from './src/app/report/reports'
 import ProductsList from './src/app/product/productslist'
 import ProductDetails from './src/app/product/productdetails'
+import AddProduct from './src/app/product/addproduct'
 import EditProduct from './src/app/product/editproduct'
 import OrdersList from './src/app/order/orderslist'
 import OrderDetails from './src/app/order/orderdetails';
@@ -64,12 +65,13 @@ const CustomerNavigator = createStackNavigator({
 });
 
 const ProductNavigator = createStackNavigator({
-  Products: ProductsList,
+  ProductsList: ProductsList,
   ProductDetails: ProductDetails,
+  AddProduct: AddProduct,
   EditProduct: EditProduct,
   Settings: SettingNavigator,
 }, {
-  initialRouteName: 'Products',
+  initialRouteName: 'ProductsList',
   defaultNavigationOptions: {
     headerStyle: {
       backgroundColor: config.colors.headerBackColor,
@@ -114,12 +116,18 @@ const reportNavigator = createStackNavigator({
   }
 });
 
-const TabNavigator = createBottomTabNavigator({
-  Reports: reportNavigator,
-  Orders: OrderNavigator,
-  Products: ProductNavigator,
-  Customers: CustomerNavigator
-},
+// Tab Navigation
+let TabNavigatorMenu = { Reports: reportNavigator }
+if (config.permissions.orders.list) {
+  TabNavigatorMenu.Orders = OrderNavigator
+}
+if (config.permissions.products.list) {
+  TabNavigatorMenu.Products = ProductNavigator
+}
+if (config.permissions.customers.list) {
+  TabNavigatorMenu.Customers = CustomerNavigator
+}
+const TabNavigator = createBottomTabNavigator(TabNavigatorMenu,
   {
     initialRouteName: 'Reports',
     defaultNavigationOptions: ({ navigation }) => ({

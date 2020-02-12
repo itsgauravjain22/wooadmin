@@ -52,6 +52,25 @@ export default class OrdersList extends Component {
         this._isMounted = false;
     }
 
+    render() {
+        return (
+            <View style={{ flex: 1 }}>
+                <SearchBar onSearchPress={this.handleSearch}></SearchBar>
+                <FlatList
+                    data={this.state.data}
+                    keyExtractor={item => item.id.toString()}
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.handleRefresh}
+                    onEndReached={this.state.hasMoreToLoad ? this.handleLoadMore : null}
+                    onEndReachedThreshold={0.5}
+                    ItemSeparatorComponent={this.renderListSeparator}
+                    ListFooterComponent={this.renderListFooter}
+                    renderItem={this.renderItem}
+                />
+            </View>
+        );
+    }
+
     getCredentials = async () => {
         const credentials = await SecureStore.getItemAsync('credentials');
         const credentialsJson = JSON.parse(credentials)
@@ -157,12 +176,11 @@ export default class OrdersList extends Component {
     renderItem = ({ item }) => {
         return (
             <TouchableOpacity onPress={() => {
-                this.props.navigation.navigate('OrderDetails', {
-                    orderId: item.id,
-                    base_url: this.state.base_url,
-                    c_key: this.state.c_key,
-                    c_secret: this.state.c_secret
-                });
+                if (config.permissions.orders.view) {
+                    this.props.navigation.navigate('OrderDetails', {
+                        orderId: item.id
+                    });
+                }
             }}>
                 <View
                     style={{
@@ -181,25 +199,6 @@ export default class OrdersList extends Component {
                 </View>
             </TouchableOpacity>
         )
-    }
-
-    render() {
-        return (
-            <View style={{ flex: 1 }}>
-                <SearchBar onSearchPress={this.handleSearch}></SearchBar>
-                <FlatList
-                    data={this.state.data}
-                    keyExtractor={item => item.id.toString()}
-                    refreshing={this.state.refreshing}
-                    onRefresh={this.handleRefresh}
-                    onEndReached={this.state.hasMoreToLoad ? this.handleLoadMore : null}
-                    onEndReachedThreshold={0.5}
-                    ItemSeparatorComponent={this.renderListSeparator}
-                    ListFooterComponent={this.renderListFooter}
-                    renderItem={this.renderItem}
-                />
-            </View>
-        );
     }
 }
 

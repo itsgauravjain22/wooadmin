@@ -14,7 +14,37 @@
         "btnColor": "#96588a",
         "btnTextColor": "white",
         "barChartDataColor": "#96588a",
-        "pieChartDataColors": ["#96588a", "#CBACC5"],
+        "pieChartDataColors": [
+            "#96588a",
+            "#CBACC5"
+        ],
         "multiSelectSelectedColor": "#96588a"
+    },
+    "permissions": {
+        "reports": {
+            "summary": true,
+            "sales": true,
+            "orders": true,
+            "products": true,
+            "customers": true,
+            "reviews": true,
+            "coupons": true
+        },
+        "orders": {
+            "list": true,
+            "view": true,
+            "edit": true
+        },
+        "products": {
+            "list": true,
+            "view": true,
+            "add": true,
+            "edit": true,
+            "delete": true
+        },
+        "customers": {
+            "list": true,
+            "view": true
+        }
     }
 }

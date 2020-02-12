@@ -51,6 +51,27 @@ export default class ProductsList extends Component {
         this._isMounted = false;
     }
 
+    render() {
+        return (
+            <View style={{ flex: 1 }}>
+                <SearchBar onSearchPress={this.handleSearch}></SearchBar>
+                <FlatList
+                    data={this.state.data}
+                    keyExtractor={item => item.id.toString()}
+                    refreshing={this.state.refreshing}
+                    extraData={this.state.data}
+                    onRefresh={this.handleRefresh}
+                    onEndReached={this.state.hasMoreToLoad ? this.handleLoadMore : null}
+                    onEndReachedThreshold={0.5}
+                    ItemSeparatorComponent={this.renderListSeparator}
+                    ListFooterComponent={this.renderListFooter}
+                    renderItem={this.renderItem}
+                />
+                {this.displayAddProductButton()}
+            </View>
+        );
+    }
+
     getCredentials = async () => {
         const credentials = await SecureStore.getItemAsync('credentials');
         const credentialsJson = JSON.parse(credentials)
@@ -153,13 +174,12 @@ export default class ProductsList extends Component {
     renderItem = ({ item }) => {
         return (
             <TouchableOpacity onPress={() => {
-                this.props.navigation.navigate('ProductDetails', {
-                    productId: item.id,
-                    productName: item.name,
-                    base_url: this.state.base_url,
-                    c_key: this.state.c_key,
-                    c_secret: this.state.c_secret
-                });
+                if (config.permissions.products.view) {
+                    this.props.navigation.navigate('ProductDetails', {
+                        productId: item.id,
+                        productName: item.name
+                    });
+                }
             }}>
                 <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white' }}>
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -187,24 +207,31 @@ export default class ProductsList extends Component {
         )
     }
 
-    render() {
-        return (
-            <View style={{ flex: 1 }}>
-                <SearchBar onSearchPress={this.handleSearch}></SearchBar>
-                <FlatList
-                    data={this.state.data}
-                    keyExtractor={item => item.id.toString()}
-                    refreshing={this.state.refreshing}
-                    extraData={this.state.data}
-                    onRefresh={this.handleRefresh}
-                    onEndReached={this.state.hasMoreToLoad ? this.handleLoadMore : null}
-                    onEndReachedThreshold={0.5}
-                    ItemSeparatorComponent={this.renderListSeparator}
-                    ListFooterComponent={this.renderListFooter}
-                    renderItem={this.renderItem}
-                />
-            </View>
-        );
+    //Display Functions Below
+
+    displayAddProductButton = () => {
+        if (config.permissions.products.add) {
+            return (
+                <TouchableOpacity
+                    style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: 50,
+                        backgroundColor: config.colors.btnColor
+                    }}
+                    onPress={() => {
+                        this.props.navigation.navigate('AddProduct')
+                    }}
+                >
+                    <Text style={{
+                        color: config.colors.btnTextColor,
+                        fontWeight: 'bold'
+                    }}>
+                        Add Product
+                </Text>
+                </TouchableOpacity >
+            )
+        } else return <></>
     }
 }
 
