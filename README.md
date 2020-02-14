@@ -6,6 +6,7 @@ A React Native woocommerce admin application for android currently in developeme
 - View Product List
 - View Product Details
 - Edit Simple Product Details (Currently in Developement)
+- Add Simple Products
 - View Order List
 - View Order Details including ordered Products, Shipping Address and Billing Address.
 - Order Details include WooCommerce Extra Product Options (text fields only) from [Theme Complete Plugin](https://codecanyon.net/item/woocommerce-extra-product-options/7908619)
@@ -14,8 +15,9 @@ A React Native woocommerce admin application for android currently in developeme
 - View Customer Details
 
 ## Roadmap
-- Include more fields in edit products
-- Include add simple products option
+- Include orders filter
+- Include products filters
+- Include product image upload option in edit and add products (Blocked due to [this issue](https://github.com/woocommerce/woocommerce-rest-api/issues/123). Vote for it.)
 
 ## Screenshots
 ### **Login Screen**
