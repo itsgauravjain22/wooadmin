@@ -40,9 +40,7 @@ export default class OrderDetails extends Component {
     async componentDidMount() {
         this._isMounted = true;
         this._isMounted && await this.getCredentials();
-        this.focusListener = this.props.navigation.addListener('didFocus', () => {
-            this.fetchOrderDetails()
-        });
+        this._isMounted && this.fetchOrderDetails()
     }
 
     render() {
@@ -256,6 +254,7 @@ export default class OrderDetails extends Component {
     //Update Functions Below
 
     updateOrderStatus = () => {
+        const { base_url, c_key, c_secret } = this.state
         const url = `${base_url}/wp-json/wc/v3/orders/${orderId}?consumer_key=${c_key}&consumer_secret=${c_secret}`;
         fetch(url, {
             method: 'PUT',

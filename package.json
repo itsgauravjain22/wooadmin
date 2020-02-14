@@ -21,6 +21,7 @@
     "react-dom": "~16.9.0",
     "react-native": "~0.61.4",
     "react-native-floating-action": "^1.20.0",
+    "react-native-floating-labels": "^1.1.9",
     "react-native-gesture-handler": "^1.5.3",
     "react-native-multiple-select": "^0.5.5",
     "react-native-reanimated": "~1.4.0",

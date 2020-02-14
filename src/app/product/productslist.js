@@ -142,7 +142,7 @@ export default class ProductsList extends Component {
     }
 
     handleRefresh = () => {
-        this._isMounted && this.setState({
+        this.setState({
             page: 1,
             refreshing: true,
             data: []

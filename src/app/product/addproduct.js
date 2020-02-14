@@ -4,9 +4,9 @@ import {
     ScrollView, ActivityIndicator, TextInput, Picker, ToastAndroid
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import FloatingLabel from 'react-native-floating-labels'
 import MultiSelect from 'react-native-multiple-select';
 import * as SecureStore from 'expo-secure-store';
-import Base64 from '../../utility/base64';
 import GLOBAL from './productglobal'
 
 const config = require('../../../config.json');
@@ -25,8 +25,8 @@ export default class AddProduct extends Component {
             loading: true,
             error: null,
             base_url: null,
-            username: null,
-            password: null,
+            c_key: null,
+            c_secret: null,
             productCategoriesPage: 1,
             hasMoreProductCategoriesToLoad: true,
             productCategories: [],
@@ -57,9 +57,7 @@ export default class AddProduct extends Component {
     async componentDidMount() {
         this._isMounted = true;
         this._isMounted && await this.getCredentials();
-        this.focusListener = this.props.navigation.addListener('didFocus', () => {
-            this.fetchAllProductCategories()
-        });
+        this._isMounted && this.fetchAllProductCategories();
     }
 
     getCredentials = async () => {
@@ -67,8 +65,8 @@ export default class AddProduct extends Component {
         const credentialsJson = JSON.parse(credentials)
         this.setState({
             base_url: credentialsJson.base_url,
-            username: credentialsJson.username,
-            password: credentialsJson.password,
+            c_key: credentialsJson.c_key,
+            c_secret: credentialsJson.c_secret,
         })
     }
 
@@ -83,8 +81,8 @@ export default class AddProduct extends Component {
 
         return (
             <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior='padding' enabled>
-                <ScrollView>
-                    {this.displayProductNameSection()}
+                <ScrollView contentContainerStyle={{ paddingBottom: 50 }} >
+                    {this.displayProductBasicDetailsSection()}
                     {this.displayProductStatusSection()}
                     {this.displayProductCategoriesSection()}
                     {this.displayProductPricingSection()}
@@ -100,15 +98,10 @@ export default class AddProduct extends Component {
     //Fetch Functions Below
 
     fetchAllProductCategories = () => {
-        const { base_url, username, password, productCategoriesPage } = this.state;
-        const url = `${base_url}/wp-json/wc/v3/products/categories?per_page=20&page=${productCategoriesPage}`;
+        const { base_url, c_key, c_secret, productCategoriesPage } = this.state;
+        const url = `${base_url}/wp-json/wc/v3/products/categories?per_page=20&page=${productCategoriesPage}&consumer_key=${c_key}&consumer_secret=${c_secret}`;
         this.setState({ loading: true });
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Basic ${Base64.btoa(username + ':' + password)}`
-            }
-        }).then((response) => response.json())
+        fetch(url).then((response) => response.json())
             .then((responseJson) => {
                 if (Array.isArray(responseJson) && responseJson.length > 0 && 'id' in responseJson[0]) {
                     responseJson.forEach((item, index) => {
@@ -129,34 +122,49 @@ export default class AddProduct extends Component {
                         error: responseJson.code,
                         loading: false
                     })
+                    ToastAndroid.show('Error fetching product categories. Error Code: ' + this.state.error, ToastAndroid.LONG)
                 }
             }).catch((error) => {
                 this.setState({
                     error,
                     loading: false
                 })
+                ToastAndroid.show('Error fetching product categories. Error: ' + this.state.error, ToastAndroid.LONG)
             });
     }
 
     //Display Functions Below
 
-    displayProductNameSection = () => {
+    displayProductBasicDetailsSection = () => {
         return (
             < View style={styles.section} >
-                <Text style={styles.titleText}>Product Name</Text>
-                <TextInput
-                    style={{
-                        borderColor: 'gray',
-                        borderBottomWidth: 1
-                    }}
-                    textAlign='center'
-                    onChangeText={text => {
-                        this.setState({
-                            name: text.toString()
-                        })
-                    }}
-                    value={this.state.name}
-                />
+                <Text style={styles.titleText}>Basic Details</Text>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionCol}>
+                        <FloatingLabel
+                            inputStyle={styles.floatingInput}
+                            labelStyle={styles.labelInput}
+                            style={styles.formInput}
+                            value={this.state.name ? this.state.name.toString() : ''}
+                            onChangeText={(value) => {
+                                this.setState({ name: value })
+                            }}
+                        >Name</FloatingLabel>
+                    </View>
+                </View>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionCol}>
+                        <FloatingLabel
+                            inputStyle={styles.floatingInput}
+                            labelStyle={styles.labelInput}
+                            style={styles.formInput}
+                            value={this.state.sku ? this.state.sku.toString() : ''}
+                            onChangeText={(value) => {
+                                this.setState({ sku: value })
+                            }}
+                        >SKU</FloatingLabel>
+                    </View>
+                </View>
             </View >
         )
     }
@@ -166,10 +174,10 @@ export default class AddProduct extends Component {
             <View style={styles.section}>
                 <Text style={styles.titleText}>Status</Text>
                 <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
+                    <View style={styles.sectionCol}>
                         <Text>Status: </Text>
                     </View>
-                    <View style={styles.sectionRowRightCol}>
+                    <View style={styles.sectionCol}>
                         <Picker
                             mode='dropdown'
                             selectedValue={this.state.status}
@@ -179,8 +187,8 @@ export default class AddProduct extends Component {
                                 })
                             }}
                         >
-                            <Picker.Item label="Publish" value="publish" />
                             <Picker.Item label="Draft" value="draft" />
+                            <Picker.Item label="Publish" value="publish" />
                             <Picker.Item label="Pending" value="pending" />
                             <Picker.Item label="Private" value="private" />
                         </Picker>
@@ -225,46 +233,44 @@ export default class AddProduct extends Component {
             <View style={styles.section}>
                 <Text style={styles.titleText}>Pricing</Text>
                 <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
-                        <Text>Regular Price: </Text>
-                    </View>
-                    <View style={styles.sectionRowRightCol}>
-                        <TextInput
-                            style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
+                    <View style={styles.sectionCol}>
+                        <FloatingLabel
+                            inputStyle={styles.floatingInput}
+                            labelStyle={styles.labelInput}
+                            style={styles.formInput}
                             keyboardType='numeric'
-                            textAlign='center'
-                            value={this.state.regularPrice}
+                            value={this.state.regularPrice ? this.state.regularPrice.toString() : ''}
                             onChangeText={(value) => {
-                                if (!isNaN(value)) {
+                                if (!isNaN(parseInt(value))) {
                                     this.setState({ regularPrice: value });
+                                } else {
+                                    this.setState({ regularPrice: null });
                                 }
                             }}
-                        />
+                        >Regular Price</FloatingLabel>
                     </View>
                 </View>
                 <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
-                        <Text>Sale Price: </Text>
-                    </View>
-                    <View style={styles.sectionRowRightCol}>
-                        <TextInput
-                            style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
+                    <View style={styles.sectionCol}>
+                        <FloatingLabel
+                            inputStyle={styles.floatingInput}
+                            labelStyle={styles.labelInput}
+                            style={styles.formInput}
                             keyboardType='numeric'
-                            value={this.state.salePrice}
-                            textAlign='center'
+                            value={this.state.salePrice ? this.state.salePrice.toString() : ''}
                             onChangeText={(value) => {
-                                if (!isNaN(value)) {
+                                if (!isNaN(parseInt(value))) {
                                     this.setState({ salePrice: value });
+                                } else {
+                                    this.setState({ salePrice: null });
                                 }
                             }}
-                        />
+                        >Sale Price</FloatingLabel>
                     </View>
                 </View>
-                <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
+                <View style={[styles.sectionRow, { marginTop: 15 }]}>
+                    <View style={[styles.sectionCol, { alignItems: 'center' }]}>
                         <Text>Sale Date From: </Text>
-                    </View>
-                    <View style={styles.sectionRowRightCol}>
                         <TouchableOpacity
                             style={{ justifyContent: 'center', alignItems: 'center' }}
                             onPress={() => {
@@ -286,12 +292,8 @@ export default class AddProduct extends Component {
                             }}
                         />}
                     </View>
-                </View>
-                <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
+                    <View style={[styles.sectionCol, { alignItems: 'center' }]}>
                         <Text>Sale Date To: </Text>
-                    </View>
-                    <View style={styles.sectionRowRightCol}>
                         <TouchableOpacity
                             style={{ justifyContent: 'center', alignItems: 'center' }}
                             onPress={() => {
@@ -323,10 +325,10 @@ export default class AddProduct extends Component {
             <View style={styles.section}>
                 <Text style={styles.titleText}>Inventory</Text>
                 <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
+                    <View style={styles.sectionCol}>
                         <Text>Stock Status: </Text>
                     </View>
-                    <View style={styles.sectionRowRightCol}>
+                    <View style={styles.sectionCol}>
                         <Picker
                             mode='dropdown'
                             selectedValue={this.state.stock_status}
@@ -341,10 +343,10 @@ export default class AddProduct extends Component {
                     </View>
                 </View>
                 <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
+                    <View style={styles.sectionCol}>
                         <Text>Manage Stock: </Text>
                     </View>
-                    <View style={[styles.sectionRowRightCol, { alignItems: 'center' }]}>
+                    <View style={[styles.sectionCol, { alignItems: 'center' }]}>
                         <Switch
                             thumbColor={config.colors.switchThumbColor}
                             trackColor={{ true: config.colors.switchTrackColor }}
@@ -355,24 +357,26 @@ export default class AddProduct extends Component {
                         />
                     </View>
                 </View>
-                <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
-                        <Text>Stock Quantity: </Text>
+                {this.state.manageStock
+                    ? <View style={styles.sectionRow}>
+                        <View style={styles.sectionCol}>
+                            <FloatingLabel
+                                inputStyle={styles.floatingInput}
+                                labelStyle={styles.labelInput}
+                                style={styles.formInput}
+                                keyboardType='numeric'
+                                value={this.state.stockQuantity ? this.state.stockQuantity.toString() : ''}
+                                onChangeText={(value) => {
+                                    if (!isNaN(parseInt(value))) {
+                                        this.setState({ stockQuantity: parseInt(value) })
+                                    } else{
+                                        this.setState({ stockQuantity: null})
+                                    }
+                                }}
+                            >Stock Quantity</FloatingLabel>
+                        </View>
                     </View>
-                    <View style={styles.sectionRowRightCol}>
-                        <TextInput
-                            style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
-                            keyboardType='numeric'
-                            textAlign='center'
-                            value={this.state.stockQuantity ? this.state.stockQuantity.toString() : null}
-                            onChangeText={(value) => {
-                                if (!isNaN(value)) {
-                                    this.setState({ stockQuantity: parseInt(value) });
-                                }
-                            }}
-                        />
-                    </View>
-                </View>
+                    : null}
             </View>
         )
     }
@@ -382,90 +386,86 @@ export default class AddProduct extends Component {
             <View style={styles.section}>
                 <Text style={styles.titleText}>Shipping</Text>
                 <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
-                        <Text>Weight: </Text>
-                    </View>
-                    <View style={styles.sectionRowRightCol}>
-                        <TextInput
-                            style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
-                            textAlign='center'
-                            keyboardType='numeric'
+                    <View style={styles.sectionCol}>
+                        <FloatingLabel
+                            inputStyle={styles.floatingInput}
+                            labelStyle={styles.labelInput}
+                            style={styles.formInput}
                             value={this.state.weight}
+                            keyboardType='numeric'
                             onChangeText={(value) => {
-                                if (!isNaN(value)) {
+                                if (!isNaN(parseInt(value))) {
                                     this.setState({ weight: value })
+                                } else {
+                                    this.setState({ weight: null })
                                 }
                             }}
-                        />
+                        >Weight</FloatingLabel>
                     </View>
                 </View>
                 <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
-                        <Text>Length: </Text>
-                    </View>
-                    <View style={styles.sectionRowRightCol}>
-                        <TextInput
-                            style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
-                            keyboardType='numeric'
-                            textAlign='center'
+                    <View style={styles.sectionCol}>
+                        <FloatingLabel
+                            inputStyle={styles.floatingInput}
+                            labelStyle={styles.labelInput}
+                            style={styles.formInput}
                             value={this.state.length}
+                            keyboardType='numeric'
                             onChangeText={(value) => {
-                                if (!isNaN(value)) {
+                                if (!isNaN(parseInt(value))) {
                                     this.setState({ length: value })
+                                } else {
+                                    this.setState({ length: null })
                                 }
                             }}
-                        />
+                        >L</FloatingLabel>
                     </View>
-                </View>
-                <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
-                        <Text>Width: </Text>
-                    </View>
-                    <View style={styles.sectionRowRightCol}>
-                        <TextInput
-                            style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
-                            keyboardType='numeric'
-                            textAlign='center'
+                    <View style={styles.sectionCol}>
+                        <FloatingLabel
+                            inputStyle={styles.floatingInput}
+                            labelStyle={styles.labelInput}
+                            style={styles.formInput}
                             value={this.state.width}
+                            keyboardType='numeric'
                             onChangeText={(value) => {
-                                if (!isNaN(value)) {
+                                if (!isNaN(parseInt(value))) {
                                     this.setState({ width: value })
+                                } else {
+                                    this.setState({ width: null })
                                 }
                             }}
-                        />
+                        >W</FloatingLabel>
                     </View>
-                </View>
-                <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
-                        <Text>Height: </Text>
-                    </View>
-                    <View style={styles.sectionRowRightCol}>
-                        <TextInput
-                            style={{ height: 30, borderBottomColor: 'gray', borderBottomWidth: 1 }}
+                    <View style={styles.sectionCol}>
+                        <FloatingLabel
+                            inputStyle={styles.floatingInput}
+                            labelStyle={styles.labelInput}
+                            style={styles.formInput}
                             keyboardType='numeric'
-                            textAlign='center'
                             value={this.state.height}
                             onChangeText={(value) => {
-                                if (!isNaN(value)) {
+                                if (!isNaN(parseInt(value))) {
                                     this.setState({ height: value })
+                                } else {
+                                    this.setState({ height: null })
                                 }
                             }}
-                        />
+                        >H</FloatingLabel>
                     </View>
                 </View>
             </View>
         )
     }
 
-    displayProductTypeSection = () => {
+    ddisplayProductTypeSection = () => {
         return (
             <View style={styles.section}>
                 <Text style={styles.titleText}>Type</Text>
                 <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
+                    <View style={styles.sectionCol}>
                         <Text>Product Type: </Text>
                     </View>
-                    <View style={styles.sectionRowRightCol}>
+                    <View style={styles.sectionCol}>
                         <Picker mode='dropdown'
                             selectedValue={this.state.type}
                             onValueChange={(value) => {
@@ -477,13 +477,13 @@ export default class AddProduct extends Component {
                     </View>
                 </View>
                 <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
+                    <View style={styles.sectionCol}>
                         <Text>Virtual: </Text>
                     </View>
-                    <View style={styles.sectionRowRightCol}>
+                    <View style={styles.sectionCol}>
                         <Switch
-                            thumbColor={config.color.switchThumbColor}
-                            trackColor={{ true: config.color.switchTrackColor }}
+                            thumbColor={config.colors.switchThumbColor}
+                            trackColor={{ true: config.colors.switchTrackColor }}
                             value={this.state.virtual}
                             onValueChange={(value) => {
                                 this.setState({ virtual: value })
@@ -492,10 +492,10 @@ export default class AddProduct extends Component {
                     </View>
                 </View>
                 <View style={styles.sectionRow}>
-                    <View style={styles.sectionRowLeftCol}>
+                    <View style={styles.sectionCol}>
                         <Text>Downloadable: </Text>
                     </View>
-                    <View style={styles.sectionRowRightCol}>
+                    <View style={styles.sectionCol}>
                         <Switch
                             thumbColor={config.colors.switchThumbColor}
                             trackColor={{ true: config.switchTrackColor }}
@@ -547,7 +547,6 @@ export default class AddProduct extends Component {
             "date_on_sale_to": this.state.dateOnSaleTo,
             "manage_stock": this.state.manageStock,
             "stock_status": this.state.stockStatus,
-            "stock_quantity": this.state.stockQuantity,
             "weight": this.state.weight,
             "dimensions": { "length": `${this.state.length}`, "width": `${this.state.width}`, "height": `${this.state.height}` },
             "type": this.state.type,
@@ -555,35 +554,41 @@ export default class AddProduct extends Component {
             "downloadable": this.state.downloadable,
             "categories": updatedProductCategoriesArray
         };
-        const { base_url, username, password } = this.state;
-        const url = `${base_url}/wp-json/wc/v3/products`;
-        this.setState({ loading: true });
-        let headers = {
-            'Authorization': `Basic ${Base64.btoa(username + ':' + password)}`,
-            'Content-Type': 'application/json'
+        if(this.state.manageStock){
+            updatedProductObject.stock_quantity = this.state.stockQuantity
         }
+        const { base_url, c_key, c_secret } = this.state;
+        const url = `${base_url}/wp-json/wc/v3/products?consumer_key=${c_key}&consumer_secret=${c_secret}`;
+        this.setState({ loading: true });
         fetch(url, {
             method: 'POST',
-            headers: headers,
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(updatedProductObject),
         }).then((response) => response.json())
             .then((responseJson) => {
-                this.setState({
-                    error: responseJson.code || null,
-                    loading: false,
-                });
-                if ("message" in responseJson) {
-                    ToastAndroid.show(`Product Not Added. Code: ${responseJson.message}`, ToastAndroid.LONG);
+                if ("code" in responseJson) {
+                    this.setState({
+                        error: responseJson.code || null,
+                        loading: false,
+                    });
+                    ToastAndroid.show(`Product not added. Error Code: ${responseJson.code}`, ToastAndroid.LONG);
                 } else {
-                    ToastAndroid.show('Product Added', ToastAndroid.LONG);
+                    this.setState({
+                        loading: false,
+                    })
+                    ToastAndroid.show('Product added', ToastAndroid.LONG);
+                    GLOBAL.productslistScreen.handleRefresh()
+                    this.props.navigation.navigate('ProductsList')
                 }
             }).catch((error) => {
                 this.setState({
                     error,
                     loading: false,
                 })
+                ToastAndroid.show(`Product not added. Error: ${responseJson.code}`, ToastAndroid.LONG);
             });
-        GLOBAL.productslistScreen.handleRefresh()
     }
 }
 
@@ -601,17 +606,22 @@ const styles = StyleSheet.create({
     sectionRow: {
         flex: 1,
         flexDirection: 'row',
-        marginLeft: 10,
-        marginRight: 10,
         alignItems: 'center',
-        height: 35
     },
-    sectionRowLeftCol: {
-        flex: 2,
-        justifyContent: 'center',
+    sectionCol: {
+        flex: 1,
+        paddingLeft: 10,
+        paddingRight: 10
     },
-    sectionRowRightCol: {
-        flex: 2,
-        justifyContent: 'center',
-    }
+    labelInput: {
+        // fontSize: 16
+    },
+    floatingInput: {
+        borderWidth: 0,
+        fontSize: 16
+    },
+    formInput: {
+        borderBottomWidth: 1.5,
+        borderColor: '#333'
+    },
 });

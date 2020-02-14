@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, ActivityIndicator, Alert, ToastAndroid } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { FloatingAction } from "react-native-floating-action";
 import { Ionicons } from '@expo/vector-icons';
@@ -32,9 +32,7 @@ export default class ProductDetails extends Component {
     async componentDidMount() {
         this._isMounted = true;
         this._isMounted && await this.getCredentials();
-        this.focusListener = this.props.navigation.addListener('didFocus', () => {
-            this.fetchProductDetails()
-        });
+        this._isMounted && this.fetchProductDetails()
     }
 
     render() {
@@ -216,7 +214,10 @@ export default class ProductDetails extends Component {
                 <Text style={styles.titleText}>Inventory</Text>
                 <Text>Stock Status: {this.state.productData.stock_status}</Text>
                 <Text>Manage Stock: {this.state.productData.manage_stock ? 'Yes' : 'No'}</Text>
-                <Text>Stock Qty: {this.state.productData.stock_quantity}</Text>
+                {this.state.productData.manage_stock
+                    ? <Text>Stock Qty: {this.state.productData.stock_quantity}</Text>
+                    : null
+                }
             </View>
         )
     }
@@ -323,64 +324,32 @@ export default class ProductDetails extends Component {
         } else return null
     }
 
-    // displayEditProductButton = () => {
-    //     return (
-    //         <TouchableOpacity
-    //             style={{
-    //                 borderWidth: 1,
-    //                 borderColor: 'rgba(0,0,0,0.2)',
-    //                 alignItems: 'center',
-    //                 justifyContent: 'center',
-    //                 width: 60,
-    //                 height: 60,
-    //                 position: 'absolute',
-    //                 bottom: 15,
-    //                 right: 15,
-    //                 backgroundColor: '#fff',
-    //                 borderRadius: 100,
-    //             }}
-    //             onPress={() => {
-    //                 this.props.navigation.navigate('EditProduct', {
-    //                     productId: productId,
-    //                     productName: this.props.navigation.productName,
-    //                     productData: this.state.productData,
-    //                     base_url: base_url,
-    //                     c_key: c_key,
-    //                     c_secret: c_secret
-    //                 });
-    //             }}
-    //         >
-    //             <Ionicons name="md-create" size={30} color={config.colors.btnColor} />
-    //         </TouchableOpacity>
-    //     )
-    // }
-
     // Delete a product
     deleteProduct = () => {
-        const { base_url, username, password } = this.state;
-        const url = `${base_url}/wp-json/wc/v3/products/${productId}`;
-        let headers = {
-            'Authorization': `Basic ${Base64.btoa(username + ':' + password)}`
-        }
+        const { base_url, c_key, c_secret } = this.state;
+        const url = `${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`;
         this.setState({ loading: true });
         fetch(url, {
-            method: 'DELETE',
-            headers: headers
+            method: 'DELETE'
         }).then((response) => response.json())
             .then((responseJson) => {
                 if ('id' in responseJson) {
+                    ToastAndroid.show('Product Deleted.', ToastAndroid.LONG);
                     GLOBAL.productslistScreen.handleRefresh()
                     this.props.navigation.navigate('ProductsList')
+                } else if ('code' in responseJson) {
+                    this.setState({
+                        error: responseJson.code || null,
+                        loading: false
+                    });
+                    ToastAndroid.show(`Product Not Deleted. Error Code: ${responseJson.code}`, ToastAndroid.LONG);
                 }
-                this.setState({
-                    error: responseJson.code || null,
-                    loading: false
-                });
             }).catch((error) => {
                 this.setState({
                     error,
                     loading: false
                 })
+                ToastAndroid.show(`Product Not Deleted. Error: ${responseJson.code}`, ToastAndroid.LONG);
             });
     }
 
