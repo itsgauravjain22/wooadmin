@@ -674,13 +674,6 @@ export default class EditProduct extends Component {
         };
         console.log(updatedProductObject)
 
-        // replacer = (key, value) => {
-        //     if (key === 'stock_quantity' && value === null) {
-        //         return undefined;
-        //     }
-        //     return value;
-        // }
-
         const { base_url, c_key, c_secret } = this.state
         const url = `${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`;
         this.setState({ loading: true });

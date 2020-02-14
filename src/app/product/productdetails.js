@@ -334,7 +334,7 @@ export default class ProductDetails extends Component {
         }).then((response) => response.json())
             .then((responseJson) => {
                 if ('id' in responseJson) {
-                    ToastAndroid.show('Product Deleted.', ToastAndroid.LONG);
+                    ToastAndroid.show('Product Deleted', ToastAndroid.LONG);
                     GLOBAL.productslistScreen.handleRefresh()
                     this.props.navigation.navigate('ProductsList')
                 } else if ('code' in responseJson) {

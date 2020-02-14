@@ -228,7 +228,7 @@ export default class ProductsList extends Component {
                         fontWeight: 'bold'
                     }}>
                         Add Product
-                </Text>
+                    </Text>
                 </TouchableOpacity >
             )
         } else return <></>

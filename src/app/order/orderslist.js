@@ -5,6 +5,7 @@ import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 import GLOBAL from './orderglobal'
 import SearchBar from '../commoncomponents/searchbar'
+import OrdersListFilters from './orderslistfilters'
 
 const config = require('../../../config.json');
 
@@ -30,6 +31,7 @@ export default class OrdersList extends Component {
             loading: false,
             hasMoreToLoad: true,
             searchValue: '',
+            orderStatusFilter: [],
             data: [],
             page: 1,
             error: null,
@@ -56,6 +58,7 @@ export default class OrdersList extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <SearchBar onSearchPress={this.handleSearch}></SearchBar>
+                <OrdersListFilters onApplyFilter={this.handleFilterByOrderStatus}></OrdersListFilters>
                 <FlatList
                     data={this.state.data}
                     keyExtractor={item => item.id.toString()}
@@ -82,12 +85,19 @@ export default class OrdersList extends Component {
     }
 
     fetchOrderList = () => {
-        const { base_url, c_key, c_secret, page, searchValue } = this.state;
+        const { base_url, c_key, c_secret, page, searchValue, orderStatusFilter } = this.state;
         let url = `${base_url}/wp-json/wc/v3/orders?per_page=20&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`;
 
         if (searchValue) {
             url = url.concat(`&search=${searchValue}`)
         }
+
+        if(Array.isArray(orderStatusFilter) && orderStatusFilter.length){
+            orderStatusFilter.forEach(item => {
+                url = url.concat(`&status[]=${item}`)
+            })
+        }
+
         this.setState({ loading: true });
         setTimeout(() => {
             fetch(url).then((response) => response.json())
@@ -163,8 +173,19 @@ export default class OrdersList extends Component {
     }
 
     handleSearch = (value) => {
-        this._isMounted && this.setState({
+        this.setState({
             searchValue: value,
+            page: 1,
+            refreshing: true,
+            data: []
+        }, () => {
+            this.fetchOrderList()
+        })
+    }
+
+    handleFilterByOrderStatus = (value) => {
+        this.setState({
+            orderStatusFilter: value,
             page: 1,
             refreshing: true,
             data: []
