@@ -1,6 +1,11 @@
 # wooadmin
 A React Native woocommerce admin application for android currently in developement. I am learning react native along with creating this app. Any help or suggestion would be great.
 
+## Dev Installation Instruction
+- Clone the repo.
+- Run `npm install` and then `expo start`
+- Download [expo app](https://play.google.com/store/apps/details?id=host.exp.exponent) from play store and scan the qr code.
+
 ## Features
 - Woocommece Store Report
 - View Product List
