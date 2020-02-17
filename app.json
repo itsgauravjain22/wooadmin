@@ -6,7 +6,7 @@
     "slug": "wooadmin",
     "privacy": "public",
     "sdkVersion": "36.0.0",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "entryPoint": "./node_modules/expo/AppEntry.js",
     "platforms": [
       "android"
@@ -16,7 +16,7 @@
     "description": "A react native woocommerce admin app.",
     "android": {
       "package": "com.wooadmin.wooadmin",
-      "versionCode": 3,
+      "versionCode": 4,
       "permissions": [
         "CAMERA"
       ]

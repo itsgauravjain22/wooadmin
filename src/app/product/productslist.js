@@ -4,6 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import GLOBAL from './productglobal'
 import { Ionicons } from '@expo/vector-icons';
 import SearchBar from '../commoncomponents/searchbar'
+import ProductsListFilters from './productslistfilters';
 
 const config = require('../../../config.json');
 
@@ -29,6 +30,9 @@ export default class ProductsList extends Component {
             loading: false,
             hasMoreToLoad: true,
             searchValue: '',
+            productStatusFilter: 'any',
+            productCategory: '0',
+            productStockStatusFilter: 'none',
             data: [],
             page: 1,
             error: null,
@@ -55,6 +59,7 @@ export default class ProductsList extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <SearchBar onSearchPress={this.handleSearch}></SearchBar>
+                <ProductsListFilters onApplyFilter={this.handleProductsFilter}></ProductsListFilters>
                 <FlatList
                     data={this.state.data}
                     keyExtractor={item => item.id.toString()}
@@ -83,12 +88,19 @@ export default class ProductsList extends Component {
     }
 
     fetchProductList = () => {
-        const { base_url, c_key, c_secret, page, searchValue } = this.state;
-        let url = null
+        const { base_url, c_key, c_secret, page, searchValue, productStatusFilter, productCategoryFilter, productStockStatusFilter } = this.state;
+        let url = `${base_url}/wp-json/wc/v3/products?per_page=20&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`
         if (searchValue) {
-            url = `${base_url}/wp-json/wc/v3/products?per_page=20&search=${searchValue}&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`;
-        } else {
-            url = `${base_url}/wp-json/wc/v3/products?per_page=20&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`;
+            url = url.concat(`&search=${searchValue}`)
+        }
+        if (productStatusFilter) {
+            url = url.concat(`&status=${productStatusFilter}`)
+        }
+        if (productCategoryFilter && productCategoryFilter !== '0') {
+            url = url.concat(`&category=${productCategoryFilter}`)
+        }
+        if (productStockStatusFilter && productStockStatusFilter !== 'none') {
+            url = url.concat(`&stock_status=${productStockStatusFilter}`)
         }
         this.setState({ loading: true });
         fetch(url).then((response) => response.json())
@@ -163,6 +175,19 @@ export default class ProductsList extends Component {
     handleSearch = (value) => {
         this._isMounted && this.setState({
             searchValue: value,
+            page: 1,
+            refreshing: true,
+            data: []
+        }, () => {
+            this.fetchProductList()
+        })
+    }
+
+    handleProductsFilter = (value) => {
+        this.setState({
+            productStatusFilter: value.productStatus,
+            productCategoryFilter: value.productCategory,
+            productStockStatusFilter: value.productStockStatus,
             page: 1,
             refreshing: true,
             data: []

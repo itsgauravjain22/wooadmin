@@ -18,7 +18,6 @@ export default class OrdersListFilters extends Component {
             orderStatusOptions: [],
             selectedOrderStatuses: [],
         }
-        GLOBAL.orderslistScreen = this
         this._isMounted = false;
     }
 
