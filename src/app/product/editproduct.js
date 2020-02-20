@@ -448,7 +448,7 @@ export default class EditProduct extends Component {
                     <View style={styles.sectionCol}>
                         <Picker
                             mode='dropdown'
-                            selectedValue={this.state.stock_status}
+                            selectedValue={this.state.stockStatus}
                             onValueChange={(value) => {
                                 this.setState({ stockStatus: value.toString() })
                             }}

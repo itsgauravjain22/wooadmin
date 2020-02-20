@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Modal, ScrollView, ToastAndroid } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Modal, ScrollView, ToastAndroid, Picker } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import RadioButtons from '../commoncomponents/radiobuttons'
+import FloatingLabel from 'react-native-floating-labels'
 import * as SecureStore from 'expo-secure-store';
 
 const config = require('../../../config.json');
@@ -15,6 +16,12 @@ export default class ProductsListFilters extends Component {
             c_key: null,
             c_secret: null,
             filterModalShown: false,
+            sortOrderBy: null,
+            sortOrderOptions: [
+                ['desc', 'Descending'],
+                ['asc', 'Ascending']
+            ],
+            selectedSortOrder: 'desc',
             productStatusOptions: [
                 ['any', 'Any'],
                 ['draft', 'Draft'],
@@ -23,6 +30,8 @@ export default class ProductsListFilters extends Component {
                 ['publish', 'Publish']
             ],
             selectedProductStatus: 'any',
+            productMinPrice: null,
+            productMaxPrice: null,
             productCategoriesPage: 1,
             hasMoreProductCategoriesToLoad: true,
             productCategories: [],
@@ -138,7 +147,38 @@ export default class ProductsListFilters extends Component {
             >
                 <ScrollView style={{ flex: 1 }}>
                     <View style={styles.section}>
-                        <Text style={styles.titleText}>Filter By</Text>
+                        <Text style={styles.titleText}>Product Sort</Text>
+                        <View style={styles.subSection}>
+                            <Text style={styles.h2Text}>Sort By</Text>
+                            <Picker
+                                mode='dropdown'
+                                selectedValue={this.state.sortOrderBy}
+                                onValueChange={(value) => {
+                                    this.setState({ sortOrderBy: value.toString() })
+                                }}
+                            >
+                                <Picker.Item label="Date" value="date" />
+                                <Picker.Item label="Id" value="id" />
+                                <Picker.Item label="Title" value="title" />
+                                <Picker.Item label="Slug" value="slug" />
+                                <Picker.Item label="Include" value="include" />
+                            </Picker>
+                        </View>
+                        <View style={styles.subSection}>
+                            <Text style={styles.h2Text}>Sort Order</Text>
+                            <RadioButtons
+                                options={this.state.sortOrderOptions}
+                                value={this.state.selectedSortOrder}
+                                selectedValue={(selectedValue) => {
+                                    this.setState({
+                                        selectedSortOrder: selectedValue
+                                    })
+                                }}
+                            />
+                        </View>
+                    </View>
+                    <View style={styles.section}>
+                        <Text style={styles.titleText}>Product Filter</Text>
                         <View style={styles.subSection}>
                             <Text style={styles.h2Text}>Product Status</Text>
                             <RadioButtons
@@ -164,6 +204,43 @@ export default class ProductsListFilters extends Component {
                             />
                         </View>
                         <View style={styles.subSection}>
+                            <Text style={styles.h2Text}>Product Price</Text>
+                            <View style={styles.subSectionRow}>
+                                <View style={styles.subSectionCol}>
+                                    <FloatingLabel
+                                        labelStyle={styles.labelInput}
+                                        inputStyle={styles.floatingInput}
+                                        style={styles.formInput}
+                                        keyboardType='numeric'
+                                        value={this.state.productMinPrice ? this.state.productMinPrice.toString() : ''}
+                                        onChangeText={(value) => {
+                                            if (!isNaN(parseInt(value))) {
+                                                this.setState({ productMinPrice: value });
+                                            } else {
+                                                this.setState({ productMinPrice: null });
+                                            }
+                                        }}
+                                    >Min</FloatingLabel>
+                                </View>
+                                <View style={styles.subSectionCol}>
+                                    <FloatingLabel
+                                        labelStyle={styles.labelInput}
+                                        inputStyle={styles.floatingInput}
+                                        style={styles.formInput}
+                                        keyboardType='numeric'
+                                        value={this.state.productMaxPrice ? this.state.productMaxPrice.toString() : ''}
+                                        onChangeText={(value) => {
+                                            if (!isNaN(parseInt(value))) {
+                                                this.setState({ productMaxPrice: value });
+                                            } else {
+                                                this.setState({ productMaxPrice: null });
+                                            }
+                                        }}
+                                    >Max</FloatingLabel>
+                                </View>
+                            </View>
+                        </View>
+                        <View style={styles.subSection}>
                             <Text style={styles.h2Text}>Product Categories</Text>
                             {!this.state.hasMoreProductCategoriesToLoad
                                 ? <RadioButtons
@@ -186,12 +263,26 @@ export default class ProductsListFilters extends Component {
                     </View>
                 </ScrollView>
                 <TouchableOpacity
+                    style={styles.cancelBtn}
+                    onPress={() => {
+                        this.setState({
+                            filterModalShown: false
+                        })
+                    }}
+                >
+                    <Text style={styles.applyBtnText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
                     style={styles.applyBtn}
                     onPress={() => {
                         this.props.onApplyFilter({
+                            "sortOrderBy": this.state.sortOrderBy,
+                            "sortOrder": this.state.selectedSortOrder,
                             "productStatus": this.state.selectedProductStatus,
+                            "productStockStatus": this.state.selectedProductStockStatus,
+                            "productMinPrice": this.state.productMinPrice,
+                            "productMaxPrice": this.state.productMaxPrice,
                             "productCategory": this.state.selectedProductCategory,
-                            "productStockStatus": this.state.selectedProductStockStatus
                         })
                         this.setState({
                             filterModalShown: false
@@ -200,7 +291,7 @@ export default class ProductsListFilters extends Component {
                 >
                     <Text style={styles.applyBtnText}>Apply</Text>
                 </TouchableOpacity>
-            </Modal>
+            </Modal >
         )
     }
 }
@@ -215,6 +306,16 @@ const styles = StyleSheet.create({
         marginTop: 15,
         marginLeft: 25,
         marginRight: 25
+    },
+    subSectionRow: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    subSectionCol: {
+        flex: 1,
+        paddingLeft: 10,
+        paddingRight: 10
     },
     titleText: {
         fontSize: 20,
@@ -232,6 +333,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginLeft: 5
     },
+    cancelBtn: {
+        backgroundColor: 'red',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    cancelBtnText: {
+        color: config.colors.btnTextColor,
+        fontWeight: 'bold',
+    },
     applyBtn: {
         backgroundColor: config.colors.btnColor,
         height: 50,
@@ -241,5 +352,16 @@ const styles = StyleSheet.create({
     applyBtnText: {
         color: config.colors.btnTextColor,
         fontWeight: 'bold',
-    }
+    },
+    labelInput: {
+
+    },
+    floatingInput: {
+        borderWidth: 0,
+        fontSize: 16
+    },
+    formInput: {
+        borderBottomWidth: 1.5,
+        borderColor: '#333'
+    },
 });

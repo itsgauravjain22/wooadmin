@@ -30,9 +30,13 @@ export default class ProductsList extends Component {
             loading: false,
             hasMoreToLoad: true,
             searchValue: '',
+            sortOrderBy: 'date',
+            sortOrder: 'desc',
             productStatusFilter: 'any',
             productCategory: '0',
             productStockStatusFilter: 'none',
+            productMinPriceFilter: null,
+            productMaxPriceFilter: null,
             data: [],
             page: 1,
             error: null,
@@ -88,20 +92,33 @@ export default class ProductsList extends Component {
     }
 
     fetchProductList = () => {
-        const { base_url, c_key, c_secret, page, searchValue, productStatusFilter, productCategoryFilter, productStockStatusFilter } = this.state;
+        const { base_url, c_key, c_secret, page, searchValue, sortOrderBy, sortOrder, productStatusFilter, productCategoryFilter, productStockStatusFilter, productMinPriceFilter, productMaxPriceFilter } = this.state;
         let url = `${base_url}/wp-json/wc/v3/products?per_page=20&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`
         if (searchValue) {
             url = url.concat(`&search=${searchValue}`)
         }
+        if (sortOrderBy) {
+            url = url.concat(`&orderby=${sortOrderBy}`)
+        }
+        if(sortOrder){
+            url = url.concat(`&order=${sortOrder}`)
+        }
         if (productStatusFilter) {
             url = url.concat(`&status=${productStatusFilter}`)
-        }
-        if (productCategoryFilter && productCategoryFilter !== '0') {
-            url = url.concat(`&category=${productCategoryFilter}`)
         }
         if (productStockStatusFilter && productStockStatusFilter !== 'none') {
             url = url.concat(`&stock_status=${productStockStatusFilter}`)
         }
+        if (productMinPriceFilter && !isNaN(parseInt(productMinPriceFilter))) {
+            url = url.concat(`&min_price=${productMinPriceFilter}`)
+        }
+        if (productMaxPriceFilter && !isNaN(parseInt(productMaxPriceFilter))) {
+            url = url.concat(`&max_price=${productMaxPriceFilter}`)
+        }
+        if (productCategoryFilter && productCategoryFilter !== '0') {
+            url = url.concat(`&category=${productCategoryFilter}`)
+        }
+        console.log(url)
         this.setState({ loading: true });
         fetch(url).then((response) => response.json())
             .then((responseJson) => {
@@ -185,9 +202,13 @@ export default class ProductsList extends Component {
 
     handleProductsFilter = (value) => {
         this.setState({
+            sortOrderBy: value.sortOrderBy,
+            sortOrder: value.sortOrder,
             productStatusFilter: value.productStatus,
             productCategoryFilter: value.productCategory,
             productStockStatusFilter: value.productStockStatus,
+            productMinPriceFilter: value.productMinPrice,
+            productMaxPriceFilter: value.productMaxPrice,
             page: 1,
             refreshing: true,
             data: []
