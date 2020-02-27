@@ -193,6 +193,7 @@ export default class ProductDetails extends Component {
                 <Text>Sku: {this.state.productData.sku}</Text>
                 <Text>Slug: {this.state.productData.slug}</Text>
                 <Text>Status: {this.state.productData.status}</Text>
+                <Text>Featured: {this.state.productData.featured? 'Yes': 'No'}</Text>
                 <Text>Total Ordered: {this.state.productData.total_sales}</Text>
             </View>
         )

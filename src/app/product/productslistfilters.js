@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Modal, ScrollView, ToastAndroid, Picker } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Modal, ScrollView, ToastAndroid, Picker, Switch } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import RadioButtons from '../commoncomponents/radiobuttons'
 import FloatingLabel from 'react-native-floating-labels'
@@ -32,6 +32,8 @@ export default class ProductsListFilters extends Component {
             selectedProductStatus: 'any',
             productMinPrice: null,
             productMaxPrice: null,
+            onSaleProduct: false,
+            featuredProduct: false,
             productCategoriesPage: 1,
             hasMoreProductCategoriesToLoad: true,
             productCategories: [],
@@ -241,6 +243,39 @@ export default class ProductsListFilters extends Component {
                             </View>
                         </View>
                         <View style={styles.subSection}>
+                            <Text style={styles.h2Text}>Product Options</Text>
+                            <View style={styles.subSectionRow}>
+                                <View style={styles.subSectionCol}>
+                                    <Text>On Sale: </Text>
+                                </View>
+                                <View style={[styles.subSectionCol, { alignItems: 'center' }]}>
+                                    <Switch
+                                        thumbColor={config.colors.switchThumbColor}
+                                        trackColor={{ true: config.colors.switchTrackColor }}
+                                        value={this.state.onSaleProduct}
+                                        onValueChange={(value) => {
+                                            this.setState({ onSaleProduct: value })
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                            <View style={styles.subSectionRow}>
+                                <View style={styles.subSectionCol}>
+                                    <Text>Featured: </Text>
+                                </View>
+                                <View style={[styles.subSectionCol, { alignItems: 'center' }]}>
+                                    <Switch
+                                        thumbColor={config.colors.switchThumbColor}
+                                        trackColor={{ true: config.colors.switchTrackColor }}
+                                        value={this.state.featuredProduct}
+                                        onValueChange={(value) => {
+                                            this.setState({ featuredProduct: value })
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                        <View style={styles.subSection}>
                             <Text style={styles.h2Text}>Product Categories</Text>
                             {!this.state.hasMoreProductCategoriesToLoad
                                 ? <RadioButtons
@@ -282,6 +317,8 @@ export default class ProductsListFilters extends Component {
                             "productStockStatus": this.state.selectedProductStockStatus,
                             "productMinPrice": this.state.productMinPrice,
                             "productMaxPrice": this.state.productMaxPrice,
+                            "onSaleProduct": this.state.onSaleProduct,
+                            "featuredProduct": this.state.featuredProduct,
                             "productCategory": this.state.selectedProductCategory,
                         })
                         this.setState({

@@ -35,6 +35,7 @@ export default class EditProduct extends Component {
             name: null,
             sku: null,
             status: null,
+            featured: false,
             regularPrice: null,
             salePrice: null,
             dateOnSaleFrom: "",
@@ -155,6 +156,11 @@ export default class EditProduct extends Component {
                 if ('status' in responseJson) {
                     this.setState({
                         status: responseJson.status
+                    })
+                }
+                if ('featured' in responseJson) {
+                    this.setState({
+                        featured: responseJson.featured
                     })
                 }
                 if ('regular_price' in responseJson) {
@@ -311,6 +317,21 @@ export default class EditProduct extends Component {
                         </Picker>
                     </View>
                 </View>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionCol}>
+                        <Text>Featured: </Text>
+                    </View>
+                    <View style={[styles.sectionCol, { alignItems: 'center' }]}>
+                        <Switch
+                            thumbColor={config.colors.switchThumbColor}
+                            trackColor={{ true: config.colors.switchTrackColor }}
+                            value={this.state.featured}
+                            onValueChange={(value) => {
+                                this.setState({ featured: value })
+                            }}
+                        />
+                    </View>
+                </View>
             </View>
         )
     }
@@ -378,7 +399,7 @@ export default class EditProduct extends Component {
                             onChangeText={(value) => {
                                 if (!isNaN(parseInt(value))) {
                                     this.setState({ salePrice: value });
-                                } else{
+                                } else {
                                     this.setState({ salePrice: null });
                                 }
                             }}
@@ -658,6 +679,7 @@ export default class EditProduct extends Component {
             "name": this.state.name,
             "sku": this.state.sku,
             "status": this.state.status,
+            "featured": this.state.featured,
             "regular_price": this.state.regularPrice,
             "sale_price": this.state.salePrice,
             "date_on_sale_from": this.state.dateOnSaleFrom,

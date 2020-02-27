@@ -37,6 +37,8 @@ export default class ProductsList extends Component {
             productStockStatusFilter: 'none',
             productMinPriceFilter: null,
             productMaxPriceFilter: null,
+            productFeaturedFilter: false,
+            productOnSaleFilter: false,
             data: [],
             page: 1,
             error: null,
@@ -92,7 +94,10 @@ export default class ProductsList extends Component {
     }
 
     fetchProductList = () => {
-        const { base_url, c_key, c_secret, page, searchValue, sortOrderBy, sortOrder, productStatusFilter, productCategoryFilter, productStockStatusFilter, productMinPriceFilter, productMaxPriceFilter } = this.state;
+        const { base_url, c_key, c_secret, page, searchValue, sortOrderBy, sortOrder, 
+            productStatusFilter, productCategoryFilter, productStockStatusFilter, 
+            productMinPriceFilter, productMaxPriceFilter, productFeaturedFilter,
+            productOnSaleFilter } = this.state;
         let url = `${base_url}/wp-json/wc/v3/products?per_page=20&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`
         if (searchValue) {
             url = url.concat(`&search=${searchValue}`)
@@ -118,7 +123,12 @@ export default class ProductsList extends Component {
         if (productCategoryFilter && productCategoryFilter !== '0') {
             url = url.concat(`&category=${productCategoryFilter}`)
         }
-        console.log(url)
+        if (productFeaturedFilter) {
+            url = url.concat(`&featured=${productFeaturedFilter}`)
+        }
+        if (productOnSaleFilter) {
+            url = url.concat(`&on_sale=${productOnSaleFilter}`)
+        }
         this.setState({ loading: true });
         fetch(url).then((response) => response.json())
             .then((responseJson) => {
@@ -209,6 +219,8 @@ export default class ProductsList extends Component {
             productStockStatusFilter: value.productStockStatus,
             productMinPriceFilter: value.productMinPrice,
             productMaxPriceFilter: value.productMaxPrice,
+            productFeaturedFilter: value.featuredProduct,
+            productOnSaleFilter: value.onSaleProduct,
             page: 1,
             refreshing: true,
             data: []

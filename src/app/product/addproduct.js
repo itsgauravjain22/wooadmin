@@ -34,6 +34,7 @@ export default class AddProduct extends Component {
             name: null,
             sku: null,
             status: null,
+            featured: false,
             regularPrice: null,
             salePrice: null,
             dateOnSaleFrom: "",
@@ -192,6 +193,21 @@ export default class AddProduct extends Component {
                             <Picker.Item label="Pending" value="pending" />
                             <Picker.Item label="Private" value="private" />
                         </Picker>
+                    </View>
+                </View>
+                <View style={styles.sectionRow}>
+                    <View style={styles.sectionCol}>
+                        <Text>Featured: </Text>
+                    </View>
+                    <View style={[styles.sectionCol, { alignItems: 'center' }]}>
+                        <Switch
+                            thumbColor={config.colors.switchThumbColor}
+                            trackColor={{ true: config.colors.switchTrackColor }}
+                            value={this.state.featured}
+                            onValueChange={(value) => {
+                                this.setState({ featured: value })
+                            }}
+                        />
                     </View>
                 </View>
             </View>
@@ -369,8 +385,8 @@ export default class AddProduct extends Component {
                                 onChangeText={(value) => {
                                     if (!isNaN(parseInt(value))) {
                                         this.setState({ stockQuantity: parseInt(value) })
-                                    } else{
-                                        this.setState({ stockQuantity: null})
+                                    } else {
+                                        this.setState({ stockQuantity: null })
                                     }
                                 }}
                             >Stock Quantity</FloatingLabel>
@@ -541,6 +557,7 @@ export default class AddProduct extends Component {
             "name": this.state.name,
             "sku": this.state.sku,
             "status": this.state.status,
+            "featured": this.state.featured,
             "regular_price": this.state.regularPrice,
             "sale_price": this.state.salePrice,
             "date_on_sale_from": this.state.dateOnSaleFrom,
@@ -554,7 +571,7 @@ export default class AddProduct extends Component {
             "downloadable": this.state.downloadable,
             "categories": updatedProductCategoriesArray
         };
-        if(this.state.manageStock){
+        if (this.state.manageStock) {
             updatedProductObject.stock_quantity = this.state.stockQuantity
         }
         const { base_url, c_key, c_secret } = this.state;
