@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, ActivityIndicator, Alert, ToastAndroid } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { FloatingAction } from "react-native-floating-action";
+// import { FloatingAction } from "react-native-floating-action";
+import ActionButton from 'react-native-action-button';
 import { Ionicons } from '@expo/vector-icons';
 import GLOBAL from './productglobal'
+import { TrackingConfiguration } from 'expo/build/AR';
 
 const config = require('../../../config.json');
 
@@ -193,7 +195,7 @@ export default class ProductDetails extends Component {
                 <Text>Sku: {this.state.productData.sku}</Text>
                 <Text>Slug: {this.state.productData.slug}</Text>
                 <Text>Status: {this.state.productData.status}</Text>
-                <Text>Featured: {this.state.productData.featured? 'Yes': 'No'}</Text>
+                <Text>Featured: {this.state.productData.featured ? 'Yes' : 'No'}</Text>
                 <Text>Total Ordered: {this.state.productData.total_sales}</Text>
             </View>
         )
@@ -264,63 +266,58 @@ export default class ProductDetails extends Component {
 
     displayEditAndDeleteProductButton = () => {
         if (config.permissions.products.edit || config.permissions.products.delete) {
-            const actions = []
-
-            if (config.permissions.products.edit) {
-                actions.push(
-                    {
-                        text: "Edit",
-                        color: config.colors.btnColor,
-                        icon: <Ionicons name="md-create" size={20} color={config.colors.btnTextColor} />,
-                        margin: 8,
-                        name: "edit_product",
-                        position: 1
-                    }
-                )
-            }
-
-            if (config.permissions.products.delete) {
-                actions.push(
-                    {
-                        text: "Delete",
-                        color: config.colors.btnColor,
-                        icon: <Ionicons name="md-trash" size={20} color={config.colors.btnTextColor} />,
-                        margin: 8,
-                        name: "delete_product",
-                        position: 2
-                    }
-                )
-            }
-
             return (
-                < FloatingAction
-                    actions={actions}
-                    color={config.colors.btnColor}
-                    onPressItem={name => {
-                        if (name === 'edit_product') {
-                            this.props.navigation.navigate('EditProduct', {
-                                productId: productId,
-                                productName: this.state.productData.name,
-                            });
-                        } else if (name === 'delete_product') {
-                            Alert.alert(
-                                'Delete Product',
-                                'Do you really want to delete this product?',
-                                [
-                                    {
-                                        text: 'No'
-                                    },
-                                    {
-                                        text: 'Yes',
-                                        onPress: this.deleteProduct
-                                    },
-                                ],
-                                { cancelable: true },
-                            );
-                        }
-                    }
-                    }
-                />
+                <ActionButton
+                    buttonColor={config.colors.btnColor}
+                    hideShadow={true}
+                >
+                    {config.permissions.products.edit
+                        ? <ActionButton.Item
+                            buttonColor={config.colors.btnColor}
+                            title="Edit"
+                            size={35}
+                            textContainerStyle={{ height: 27 }}
+                            textStyle={{ fontSize: 16 }}
+                            spaceBetween={8}
+                            onPress={() => {
+                                this.props.navigation.navigate('EditProduct', {
+                                    productId: productId,
+                                    productName: this.state.productData.name,
+                                })
+                            }}
+                        >
+                            <Ionicons name="md-create" size={20} color={config.colors.btnTextColor} />
+                        </ActionButton.Item>
+                        : null}
+                    {config.permissions.products.delete
+                        ? <ActionButton.Item
+                            buttonColor='red'
+                            title="Delete"
+                            size={35}
+                            textContainerStyle={{ height: 27 }}
+                            textStyle={{ fontSize: 16 }}
+                            spaceBetween={8}
+                            onPress={() => {
+                                Alert.alert(
+                                    'Delete Product',
+                                    'Do you really want to delete this product?',
+                                    [
+                                        {
+                                            text: 'No'
+                                        },
+                                        {
+                                            text: 'Yes',
+                                            onPress: this.deleteProduct
+                                        },
+                                    ],
+                                    { cancelable: true },
+                                );
+                            }}
+                        >
+                            <Ionicons name="md-trash" size={20} color={config.colors.btnTextColor} />
+                        </ActionButton.Item>
+                        : null}
+                </ActionButton>
             )
         } else return null
     }
