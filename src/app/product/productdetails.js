@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, ActivityIndicator, Alert, ToastAndroid } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-// import { FloatingAction } from "react-native-floating-action";
 import ActionButton from 'react-native-action-button';
 import { Ionicons } from '@expo/vector-icons';
 import GLOBAL from './productglobal'
-import { TrackingConfiguration } from 'expo/build/AR';
 
 const config = require('../../../config.json');
 

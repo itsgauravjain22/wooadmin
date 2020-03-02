@@ -280,7 +280,7 @@ export default class OrderDetails extends Component {
                 this.fetchOrderDetails()
                 GLOBAL.orderslistScreen.handleRefresh()
             }).catch((error) => {
-                ToastAndroid.show(`Order Not Updated`, ToastAndroid.LONG)
+                ToastAndroid.show('Order Not Updated. Error: '+error, ToastAndroid.LONG)
                 this.fetchOrderDetails()
             });
     }
@@ -393,7 +393,7 @@ export default class OrderDetails extends Component {
                     <Text>Payment Gateway: {this.state.orderData.payment_method_title}</Text>
                     <Text style={{ fontWeight: 'bold' }}>Order Total: {this.getCurrencySymbol()}{this.state.orderData.total}</Text>
                     <Text>Product Total: {this.getCurrencySymbol()}{this.getProductTotal()}</Text>
-                    <Text>Shipping:{this.getCurrencySymbol()}{this.state.orderData.shipping_total}</Text>
+                    <Text>Shipping: {this.getCurrencySymbol()}{this.state.orderData.shipping_total}</Text>
                     <Text>Taxes: {this.getCurrencySymbol()}{this.state.orderData.total_tax}</Text>
                     {this.getTMProductOptionsFees()}
                 </View>

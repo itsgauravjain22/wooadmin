@@ -62,7 +62,7 @@ export default class OrdersListFilters extends Component {
                     this.setState({
                         error: responseJson.code
                     })
-                    ToastAndroid.show(`Can't fetch other order statuses. Error: ${responseJson.message}`, ToastAndroid.LONG);
+                    ToastAndroid.show(`Can't fetch other order statuses. Error: ${responseJson.code}`, ToastAndroid.LONG);
                 } else {
                     if (Array.isArray(responseJson) && responseJson.length > 0) {
                         if ('slug' in responseJson[0] && 'name' in responseJson[0]) {
@@ -144,6 +144,16 @@ export default class OrdersListFilters extends Component {
                     </View>
                 </View>
                 <TouchableOpacity
+                    style={styles.cancelBtn}
+                    onPress={() => {
+                        this.setState({
+                            filterModalShown: false
+                        })
+                    }}
+                >
+                    <Text style={styles.cancelBtnText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
                     style={styles.applyBtn}
                     onPress={() => {
                         this.props.onApplyFilter(this.state.selectedOrderStatuses)
@@ -190,5 +200,15 @@ const styles = StyleSheet.create({
     applyBtnText: {
         color: config.colors.btnTextColor,
         fontWeight: 'bold',
-    }
+    },
+    cancelBtn: {
+        backgroundColor: 'red',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    cancelBtnText: {
+        color: config.colors.btnTextColor,
+        fontWeight: 'bold',
+    },
 });

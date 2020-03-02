@@ -305,7 +305,7 @@ export default class ProductsListFilters extends Component {
                         })
                     }}
                 >
-                    <Text style={styles.applyBtnText}>Cancel</Text>
+                    <Text style={styles.cancelBtnText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.applyBtn}

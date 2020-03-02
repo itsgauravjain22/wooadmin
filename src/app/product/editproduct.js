@@ -123,12 +123,14 @@ export default class EditProduct extends Component {
                         error: responseJson.code,
                         loading: false
                     })
+                    ToastAndroid.show('Error fetching product categories. Error Code: ' + responseJson.code, ToastAndroid.LONG)
                 }
             }).catch((error) => {
                 this.setState({
                     error,
                     loading: false
                 })
+                ToastAndroid.show('Error fetching product categories. Error: ' + error, ToastAndroid.LONG)
             });
     }
 
@@ -246,8 +248,13 @@ export default class EditProduct extends Component {
                         selectedProductCategories: selectedProductCategories
                     })
                 }
+                if ('code' in responseJson) {
+                    this.setState({
+                        error: responseJson.code
+                    })
+                    ToastAndroid.show('Error fetching product details. Error Code: ' + responseJson.code, ToastAndroid.LONG)
+                }
                 this.setState({
-                    error: responseJson.code || null,
                     loading: false,
                 })
             }).catch((error) => {
@@ -255,6 +262,7 @@ export default class EditProduct extends Component {
                     error,
                     loading: false
                 })
+                ToastAndroid.show('Error fetching product details. Error: ' + error, ToastAndroid.LONG)
             });
     }
 
@@ -685,7 +693,6 @@ export default class EditProduct extends Component {
             "date_on_sale_from": this.state.dateOnSaleFrom,
             "date_on_sale_to": this.state.dateOnSaleTo,
             "manage_stock": this.state.manageStock,
-            "stock_quantity": this.state.stockQuantity,
             "stock_status": this.state.stockStatus,
             "weight": this.state.weight,
             "dimensions": { "length": this.state.length, "width": this.state.width, "height": this.state.height },
@@ -694,8 +701,9 @@ export default class EditProduct extends Component {
             "downloadable": this.state.downloadable,
             "categories": updatedProductCategoriesArray
         };
-        console.log(updatedProductObject)
-
+        if (this.state.manageStock) {
+            updatedProductObject.stock_quantity = this.state.stockQuantity
+        }
         const { base_url, c_key, c_secret } = this.state
         const url = `${base_url}/wp-json/wc/v3/products/${productId}?consumer_key=${c_key}&consumer_secret=${c_secret}`;
         this.setState({ loading: true });
@@ -708,7 +716,7 @@ export default class EditProduct extends Component {
         }).then((response) => response.json())
             .then((responseJson) => {
                 if ("code" in responseJson) {
-                    ToastAndroid.show(`Product Not Updated. Code: ${responseJson.code}`, ToastAndroid.LONG);
+                    ToastAndroid.show(`Product Not Updated. Error Code: ${responseJson.code}`, ToastAndroid.LONG);
                     this.setState({
                         error: responseJson.code,
                         loading: false,
@@ -724,6 +732,7 @@ export default class EditProduct extends Component {
                     error,
                     loading: false,
                 })
+                ToastAndroid.show(`Product Not Updated. Error: ${error}`, ToastAndroid.LONG);
             });
     }
 }

@@ -123,14 +123,14 @@ export default class AddProduct extends Component {
                         error: responseJson.code,
                         loading: false
                     })
-                    ToastAndroid.show('Error fetching product categories. Error Code: ' + this.state.error, ToastAndroid.LONG)
+                    ToastAndroid.show('Error fetching product categories. Error Code: ' + responseJson.code, ToastAndroid.LONG)
                 }
             }).catch((error) => {
                 this.setState({
                     error,
                     loading: false
                 })
-                ToastAndroid.show('Error fetching product categories. Error: ' + this.state.error, ToastAndroid.LONG)
+                ToastAndroid.show('Error fetching product categories. Error: ' + error, ToastAndroid.LONG)
             });
     }
 

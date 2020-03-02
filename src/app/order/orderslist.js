@@ -84,7 +84,7 @@ export default class OrdersList extends Component {
         })
     }
 
-    fetchOrderList = () => {
+    fetchOrdersList = () => {
         const { base_url, c_key, c_secret, page, searchValue, orderStatusFilter } = this.state;
         let url = `${base_url}/wp-json/wc/v3/orders?per_page=20&page=${page}&consumer_key=${c_key}&consumer_secret=${c_secret}`;
 
@@ -158,7 +158,7 @@ export default class OrdersList extends Component {
             data: []
         },
             () => {
-                this.fetchOrderList();
+                this.fetchOrdersList();
             }
         )
     }
@@ -167,7 +167,7 @@ export default class OrdersList extends Component {
         this.setState({
             page: this.state.page + 1,
         }, () => {
-            this.fetchOrderList();
+            this.fetchOrdersList();
         }
         )
     }
@@ -179,7 +179,7 @@ export default class OrdersList extends Component {
             refreshing: true,
             data: []
         }, () => {
-            this.fetchOrderList()
+            this.fetchOrdersList()
         })
     }
 
@@ -190,7 +190,7 @@ export default class OrdersList extends Component {
             refreshing: true,
             data: []
         }, () => {
-            this.fetchOrderList()
+            this.fetchOrdersList()
         })
     }
 
