@@ -18,7 +18,12 @@
             "#96588a",
             "#CBACC5"
         ],
-        "multiSelectSelectedColor": "#96588a"
+        "multiSelectSelectedColor": "#96588a",
+        "orderNotes": {
+            "customerNoteBoxColor": "#e5d5e2",
+            "privateNoteBoxColor": "white"
+        }
+
     },
     "permissions": {
         "reports": {

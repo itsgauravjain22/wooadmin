@@ -47,7 +47,7 @@ export default class OrdersList extends Component {
     async componentDidMount() {
         this._isMounted = true;
         this._isMounted && await this.getCredentials();
-        this._isMounted && this.fetchOrderList();
+        this._isMounted && this.fetchOrdersList();
     }
 
     componentWillUnmount() {
