@@ -640,7 +640,12 @@ export default class OrderDetails extends Component {
                                 ToastAndroid.show('Order note copied', ToastAndroid.LONG)
                             }}
                         >
-                            <Text key={`order_note_${item.id}_note`}>{item.note}</Text>
+                            <Text
+                                key={`order_note_${item.id}_note`}
+                                dataDetectorType='all'
+                            >
+                                {item.note}
+                            </Text>
                             <Text
                                 key={`order_note_${item.id}_date_created`}
                                 style={{ fontSize: 10 }}

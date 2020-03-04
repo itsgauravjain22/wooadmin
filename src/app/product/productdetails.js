@@ -137,7 +137,7 @@ export default class ProductDetails extends Component {
             })
             return productCategoriesData;
         }
-        return <></>
+        else return []
     }
 
     //Get product attributes data
@@ -173,7 +173,7 @@ export default class ProductDetails extends Component {
             )
             return productAttributesData;
         }
-        return <></>
+        else return []
     }
 
     //Display Functions Below
@@ -200,66 +200,78 @@ export default class ProductDetails extends Component {
     }
 
     displayProductPricingDetails = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Pricing</Text>
-                <Text>Regular Price: {this.state.productData.regular_price}</Text>
-                <Text>Sale Price: {this.state.productData.sale_price}</Text>
-            </View>
-        )
+        if (this.state.productData.regular_price || this.state.productData.sale_price) {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.titleText}>Pricing</Text>
+                    <Text>Regular Price: {this.state.productData.regular_price}</Text>
+                    <Text>Sale Price: {this.state.productData.sale_price}</Text>
+                </View>
+            )
+        }
     }
 
     displayProductInventoryDetails = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Inventory</Text>
-                <Text>Stock Status: {this.state.productData.stock_status}</Text>
-                <Text>Manage Stock: {this.state.productData.manage_stock ? 'Yes' : 'No'}</Text>
-                {this.state.productData.manage_stock
-                    ? <Text>Stock Qty: {this.state.productData.stock_quantity}</Text>
-                    : null
-                }
-            </View>
-        )
+        if (this.state.productData.stock_status || this.state.productData.manage_stock) {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.titleText}>Inventory</Text>
+                    <Text>Stock Status: {this.state.productData.stock_status}</Text>
+                    <Text>Manage Stock: {this.state.productData.manage_stock ? 'Yes' : 'No'}</Text>
+                    {this.state.productData.manage_stock
+                        ? <Text>Stock Qty: {this.state.productData.stock_quantity}</Text>
+                        : null
+                    }
+                </View>
+            )
+        }
     }
 
     displayProductShippingDetails = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Shipping</Text>
-                <Text>Weight: {this.state.productData.weight}</Text>
-                <Text>Size: {('dimensions' in this.state.productData) ? this.state.productData.dimensions.length : null}
-                    {('dimensions' in this.state.productData)
-                        ? (this.state.productData.dimensions.length) ?
-                            `x${this.state.productData.dimensions.width}`
-                            : null
-                        : null}
-                    {('dimensions' in this.state.productData)
-                        ? (this.state.productData.dimensions.length)
-                            ? `x${this.state.productData.dimensions.height}`
-                            : null
-                        : null}
-                </Text>
-            </View>
-        )
+        if (this.state.productData.weight && 'dimensions' in this.state.productData ||
+            this.state.productData.dimensions.length || this.state.productData.dimensions.width ||
+            this.state.productData.dimensions.height) {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.titleText}>Shipping</Text>
+                    <Text>Weight: {this.state.productData.weight}</Text>
+                    <Text>Size: {('dimensions' in this.state.productData) ? this.state.productData.dimensions.length : null}
+                        {('dimensions' in this.state.productData)
+                            ? (this.state.productData.dimensions.length) ?
+                                `x${this.state.productData.dimensions.width}`
+                                : null
+                            : null}
+                        {('dimensions' in this.state.productData)
+                            ? (this.state.productData.dimensions.length)
+                                ? `x${this.state.productData.dimensions.height}`
+                                : null
+                            : null}
+                    </Text>
+                </View>
+            )
+        }
     }
 
     displayProductCategoriesDetails = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Categories</Text>
-                <ScrollView horizontal={true}>{this.getProductCategories()}</ScrollView>
-            </View>
-        )
+        if (Array.isArray(this.getProductCategories()) && this.getProductCategories().length) {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.titleText}>Categories</Text>
+                    <ScrollView horizontal={true}>{this.getProductCategories()}</ScrollView>
+                </View>
+            )
+        }
     }
 
     displayProductAttributesDetails = () => {
-        return (
-            <View style={styles.section}>
-                <Text style={styles.titleText}>Attributes</Text>
-                <>{this.getProductAttributes()}</>
-            </View>
-        )
+        if (Array.isArray(this.getProductAttributes()) && this.getProductAttributes().length) {
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.titleText}>Attributes</Text>
+                    <>{this.getProductAttributes()}</>
+                </View>
+            )
+        }
     }
 
     displayEditAndDeleteProductButton = () => {
