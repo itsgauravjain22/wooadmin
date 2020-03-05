@@ -1,9 +1,9 @@
 {
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null,
+  "expoServerNgrokUrl": "https://g8-3ay.itsgauravjain22.wooadmin.exp.direct",
+  "packagerNgrokUrl": "https://packager.g8-3ay.itsgauravjain22.wooadmin.exp.direct",
+  "ngrokPid": 14684,
   "devToolsPort": 19002,
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 13740
+  "packagerPid": 4776
 }

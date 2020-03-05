@@ -21,18 +21,6 @@
         "CAMERA"
       ]
     },
-    "owner": "itsgauravjain22",
-    "hooks": {
-      "postPublish": [
-        {
-          "file": "sentry-expo/upload-sourcemaps",
-          "config": {
-            "organization": "gaurav-jain-apps",
-            "project": "wooadmin",
-            "authToken": "1f61a15c83fb4824b179aef5d2db166e3bf2f81cf202430da962591229c9f1fa"
-          }
-        }
-      ]
-    }
+    "owner": "itsgauravjain22"
   }
 }
