@@ -3,7 +3,7 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator } from 'react-navigation-stack';
 import { Ionicons } from '@expo/vector-icons';
-import * as Sentry from 'sentry-expo';
+// import * as Sentry from 'sentry-expo';
 import AuthLoadingScreen from './src/app/account/auth'
 import Login from './src/app/account/login'
 import Reports from './src/app/report/reports'
@@ -19,11 +19,11 @@ import Settings from './src/app/setting/settings'
 
 const config = require('./config.json');
 
-Sentry.init({
-  dsn: 'https://bfd12dd5d0464e70a4402c2562118815@sentry.io/2344328',
-  enableInExpoDevelopment: false,
-  debug: true
-});
+// Sentry.init({
+//   dsn: 'https://bfd12dd5d0464e70a4402c2562118815@sentry.io/2344328',
+//   enableInExpoDevelopment: false,
+//   debug: true
+// });
 
 export default class App extends Component {
 

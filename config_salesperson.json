@@ -23,32 +23,33 @@
             "customerNoteBoxColor": "#e5d5e2",
             "privateNoteBoxColor": "white"
         }
+
     },
     "permissions": {
         "reports": {
-            "summary": true,
-            "sales": true,
+            "summary": false,
+            "sales": false,
             "orders": true,
             "products": true,
-            "customers": true,
-            "reviews": true,
-            "coupons": true
+            "customers": false,
+            "reviews": false,
+            "coupons": false
         },
         "orders": {
             "list": true,
             "view": true,
-            "edit": true
+            "edit": false
         },
         "products": {
             "list": true,
             "view": true,
-            "add": true,
-            "edit": true,
-            "delete": true
+            "add": false,
+            "edit": false,
+            "delete": false
         },
         "customers": {
-            "list": true,
-            "view": true
+            "list": false,
+            "view": false
         }
     }
 }

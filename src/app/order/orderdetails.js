@@ -372,51 +372,62 @@ export default class OrderDetails extends Component {
             <Modal
                 transparent={true}
                 visible={this.state.orderStatusModalShown}>
-                <View style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
+                <View
+                    style={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%',
+                        justifyContent: 'center',
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        padding: 20,
+                    }}
+                >
                     <View style={{
-                        flex: -1,
-                        width: 300,
+                        flex: 1,
                         flexDirection: 'column',
-                        backgroundColor: 'white'
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}>
-                        <Text style={styles.modalTitleText}>Change Order Status</Text>
-                        <RadioButtons
-                            options={this.state.orderStatusOptions}
-                            value={this.state.orderData.status}
-                            selectedValue={(selectedValue) => {
-                                this.setState({
-                                    orderStatusValue: selectedValue
-                                })
-                            }}
-                        />
                         <View style={{
-                            flex: 0,
-                            flexDirection: 'row-reverse',
+                            flex: -1,
+                            width: 300,
+                            flexDirection: 'column',
                             backgroundColor: 'white'
                         }}>
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        this.updateOrderStatus()
-                                        this.setState({
+                            <Text style={styles.modalTitleText}>Change Order Status</Text>
+                            <RadioButtons
+                                options={this.state.orderStatusOptions}
+                                value={this.state.orderData.status}
+                                selectedValue={(selectedValue) => {
+                                    this.setState({
+                                        orderStatusValue: selectedValue
+                                    })
+                                }}
+                            />
+                            <View style={{
+                                flex: 0,
+                                flexDirection: 'row-reverse',
+                                backgroundColor: 'white'
+                            }}>
+                                <View>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            this.updateOrderStatus()
+                                            this.setState({
+                                                orderStatusModalShown: !this.state.orderStatusModalShown
+                                            })
+                                        }}>
+                                        <Text style={styles.modalControlText}>Apply</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View>
+                                    <TouchableOpacity
+                                        onPress={() => this.setState({
                                             orderStatusModalShown: !this.state.orderStatusModalShown
-                                        })
-                                    }}>
-                                    <Text style={styles.modalControlText}>Apply</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => this.setState({
-                                        orderStatusModalShown: !this.state.orderStatusModalShown
-                                    })}>
-                                    <Text style={styles.modalControlText}>Cancel</Text>
-                                </TouchableOpacity>
+                                        })}>
+                                        <Text style={styles.modalControlText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                     </View>
@@ -528,95 +539,106 @@ export default class OrderDetails extends Component {
             <Modal
                 transparent={true}
                 visible={this.state.addOrderNoteModalShown}>
-                <View style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
+                <View
+                    style={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%',
+                        justifyContent: 'center',
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        padding: 20,
+                    }}
+                >
                     <View style={{
-                        flex: -1,
-                        width: 300,
-                        backgroundColor: 'white'
+                        flex: 1,
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}>
-                        <Text style={styles.modalTitleText}>Add Order Note</Text>
                         <View style={{
                             flex: -1,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            paddingLeft: 10,
-                            paddingRight: 10
-                        }}>
-                            <View style={{
-                                flex: -1,
-                                paddingLeft: 10,
-                                paddingRight: 10,
-                                alignItems: 'center'
-                            }}>
-                                <Text>Customer Note? : </Text>
-                            </View>
-                            <View style={{
-                                flex: -1,
-                                paddingLeft: 10,
-                                paddingRight: 10,
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}>
-                                <Switch
-                                    thumbColor={config.colors.switchThumbColor}
-                                    trackColor={{ true: config.colors.switchTrackColor }}
-                                    value={this.state.customerNote}
-                                    onValueChange={(value) => {
-                                        this.setState({ customerNote: value })
-                                    }}
-                                />
-                            </View>
-                        </View>
-                        <TextInput
-                            style={{
-                                borderWidth: 1,
-                                borderColor: 'black',
-                                margin: 10,
-                                padding: 10,
-                            }}
-                            multiline
-                            numberOfLines={4}
-                            placeholder='Add order note here...'
-                            textAlignVertical='top'
-                            onChangeText={value => {
-                                this.setState({
-                                    newOrderNote: value
-                                })
-                            }}
-                            value={this.state.newOrderNote}
-                        />
-                        <View style={{
-                            flex: 0,
-                            flexDirection: 'row-reverse',
+                            width: 300,
                             backgroundColor: 'white'
                         }}>
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        this.addOrderNote()
-                                        this.setState({
-                                            addOrderNoteModalShown: !this.state.addOrderNoteModalShown
-                                        })
-                                    }}>
-                                    <Text style={styles.modalControlText}>Add</Text>
-                                </TouchableOpacity>
+                            <Text style={styles.modalTitleText}>Add Order Note</Text>
+                            <View style={{
+                                flex: -1,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                paddingLeft: 10,
+                                paddingRight: 10
+                            }}>
+                                <View style={{
+                                    flex: -1,
+                                    paddingLeft: 10,
+                                    paddingRight: 10,
+                                    alignItems: 'center'
+                                }}>
+                                    <Text>Customer Note? : </Text>
+                                </View>
+                                <View style={{
+                                    flex: -1,
+                                    paddingLeft: 10,
+                                    paddingRight: 10,
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}>
+                                    <Switch
+                                        thumbColor={config.colors.switchThumbColor}
+                                        trackColor={{ true: config.colors.switchTrackColor }}
+                                        value={this.state.customerNote}
+                                        onValueChange={(value) => {
+                                            this.setState({ customerNote: value })
+                                        }}
+                                    />
+                                </View>
                             </View>
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => this.setState({
-                                        addOrderNoteModalShown: !this.state.addOrderNoteModalShown
-                                    })}>
-                                    <Text style={styles.modalControlText}>Cancel</Text>
-                                </TouchableOpacity>
+                            <TextInput
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: 'black',
+                                    margin: 10,
+                                    padding: 10,
+                                }}
+                                multiline
+                                numberOfLines={4}
+                                placeholder='Add order note here...'
+                                textAlignVertical='top'
+                                onChangeText={value => {
+                                    this.setState({
+                                        newOrderNote: value
+                                    })
+                                }}
+                                value={this.state.newOrderNote}
+                            />
+                            <View style={{
+                                flex: 0,
+                                flexDirection: 'row-reverse',
+                                backgroundColor: 'white'
+                            }}>
+                                <View>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            this.addOrderNote()
+                                            this.setState({
+                                                addOrderNoteModalShown: !this.state.addOrderNoteModalShown
+                                            })
+                                        }}>
+                                        <Text style={styles.modalControlText}>Add</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View>
+                                    <TouchableOpacity
+                                        onPress={() => this.setState({
+                                            addOrderNoteModalShown: !this.state.addOrderNoteModalShown
+                                        })}>
+                                        <Text style={styles.modalControlText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </View >
+                    </View >
+                </View>
             </Modal >
         )
     }
@@ -629,20 +651,17 @@ export default class OrderDetails extends Component {
                     <View key={`order_note_${item.id}_view_1`}
                         style={item.customer_note ? styles.orderCustomerNoteBox :
                             styles.orderPrivateNoteBox}>
-                        <TouchableOpacity key={`order_note_${item.id}_touch_1a`}
+                        <View key={`order_note_${item.id}_touch_1a`}
                             style={[{ padding: 5 },
                             config.permissions.orders.edit
                                 ? { width: '90%' }
                                 : { width: '100%' }
                             ]}
-                            onLongPress={() => {
-                                Clipboard.setString(item.note)
-                                ToastAndroid.show('Order note copied', ToastAndroid.LONG)
-                            }}
                         >
                             <Text
                                 key={`order_note_${item.id}_note`}
                                 dataDetectorType='all'
+                                selectable={true}
                             >
                                 {item.note}
                             </Text>
@@ -652,7 +671,7 @@ export default class OrderDetails extends Component {
                             >
                                 Note added at {Moment(item.date_created).format('D/MM/YYYY h:m:s a')} by {item.author}
                             </Text>
-                        </TouchableOpacity>
+                        </View>
                         {config.permissions.orders.edit
                             ? <View key={`order_note_${item.id}_view_1b`}
                                 style={{ width: '10%', justifyContent: 'center', alignItems: 'center' }}>
