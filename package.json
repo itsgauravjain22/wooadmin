@@ -33,7 +33,7 @@
     "react-navigation-stack": "^2.0.15",
     "react-navigation-tabs": "^2.7.0",
     "sentry-expo": "^2.0.1",
-    "victory-native": "^33.0.0"
+    "victory-native": "^36.6.8"
   },
   "devDependencies": {
     "@babel/core": "~7.6.0",
